@@ -1,0 +1,16 @@
+# --- Dossiers Node.js (React) ---
+node_modules/
+dist/
+build/
+.npm/
+
+# --- Dossiers PHP/Système ---
+vendor/
+.env                
+*.log
+
+# --- IDE & OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
