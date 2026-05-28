@@ -42,6 +42,20 @@ elseif ($endpoint === 'login' && $method === 'POST') {
     $controller = new AuthController($db);
     $controller->login();
 } 
+
+// GET /enchere?produit=X -> Voir l'enchère
+elseif ($endpoint === 'enchere' && $method === 'GET') {
+    require_once '../controllers/EnchereController.php';
+    $controller = new EnchereController($db);
+    $controller->getEnchere($_GET['produit']);
+}
+// POST /enchere -> Placer une offre
+elseif ($endpoint === 'enchere' && $method === 'POST') {
+    require_once '../controllers/EnchereController.php';
+    $controller = new EnchereController($db);
+    $controller->postOffre();
+}
+
 // Erreur 404 -> Route non trouvée
 else {
     http_response_code(404);
