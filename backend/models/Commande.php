@@ -13,7 +13,7 @@ class Commande {
             $this->conn->beginTransaction();
 
             // 2. Création de la commande globale
-            $queryCmd = "INSERT INTO COMMANDE (NumU_Acheteur, Total) VALUES (:numU, :total)";
+            $queryCmd = "INSERT INTO COMMANDE (NumU_Acheteur, MontantTotal) VALUES (:numU, :total)";
             $stmtCmd = $this->conn->prepare($queryCmd);
             $stmtCmd->bindParam(":numU", $numU_Acheteur);
             $stmtCmd->bindParam(":total", $total);
@@ -23,7 +23,7 @@ class Commande {
             $numCmd = $this->conn->lastInsertId();
 
             // 3. Insertion de chaque produit dans la table CONTIENT
-            $queryContient = "INSERT INTO CONTIENT (NumCmd, NumProd, Quantite, PrixUnitaire) VALUES (:numCmd, :numProd, :quantite, :prixUnitaire)";
+            $queryContient = "INSERT INTO CONTIENT (NumCmd, NumProd, Quantite, PrixUnit) VALUES (:numCmd, :numProd, :quantite, :prixUnitaire)";
             $stmtContient = $this->conn->prepare($queryContient);
 
             // On fait une boucle sur le panier envoyé par le Frontend

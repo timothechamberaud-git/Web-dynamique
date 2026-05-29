@@ -12,6 +12,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enchereData, setEnchereData] = useState(null);
+  const [timeLeft, setTimeLeft] = useState('...');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -36,6 +37,35 @@ const ProductDetail = () => {
     loadData();
   }, [id]);
 
+  useEffect(() => {
+    if (!enchereData) return;
+    
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      // Assume DateFin is a string like "2026-05-30 14:00:00", we need to parse it safely
+      // In JS, '2026-05-30T14:00:00' is safer for Date parsing.
+      const safeDateStr = enchereData.DateFin.replace(' ', 'T');
+      const end = new Date(safeDateStr).getTime();
+      const distance = end - now;
+
+      if (distance < 0) {
+        setTimeLeft("TERMINÉ");
+        clearInterval(interval);
+        return;
+      }
+
+      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+      const format = val => String(val).padStart(2, '0');
+      setTimeLeft(d > 0 ? `${d}j ${format(h)}:${format(m)}:${format(s)}` : `${format(h)}:${format(m)}:${format(s)}`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [enchereData]);
+
   if (loading) return <div className="loading">Chargement...</div>;
   if (!product) return <div className="empty">Produit introuvable.</div>;
 
@@ -44,7 +74,7 @@ const ProductDetail = () => {
   };
 
   const isEnchere = product.type_vente?.toLowerCase() === 'enchere';
-  const isNego = product.type_vente?.toLowerCase() === 'negociation';
+  const isNego = product.type_vente?.toLowerCase() === 'nego' || product.type_vente?.toLowerCase() === 'negociation';
   const currentPrice = isEnchere && enchereData ? enchereData.PrixActuel : product.prix;
 
   const handleAction = async () => {
@@ -52,6 +82,10 @@ const ProductDetail = () => {
       if (!user) {
         alert("Vous devez être connecté pour enchérir.");
         navigate('/login');
+        return;
+      }
+      if (timeLeft === "TERMINÉ") {
+        alert("L'enchère est terminée.");
         return;
       }
       const montant = prompt(`Entrez votre enchère (actuellement à ${currentPrice} €):`);
@@ -89,7 +123,7 @@ const ProductDetail = () => {
 
   return (
     <div className="product-detail-page">
-      <div className="page-header">DÉTAIL PRODUIT : {product.type_vente?.toUpperCase() || 'ACHAT DIRECT'}</div>
+      <div className="page-header">DÉTAIL PRODUIT : {isEnchere ? 'ENCHÈRE' : isNego ? 'NÉGOCIATION' : 'ACHAT DIRECT'}</div>
       
       <div className="detail-grid">
         <div className="detail-image-box">
@@ -108,7 +142,7 @@ const ProductDetail = () => {
             {isEnchere && (
               <div className="time-info text-green">
                 <span className="label">Fin dans</span>
-                <span className="value">02:14:55</span>
+                <span className="value">{timeLeft}</span>
               </div>
             )}
           </div>
@@ -116,6 +150,8 @@ const ProductDetail = () => {
           <button 
             className={isEnchere ? "btn-success btn-full" : "btn-primary btn-full"}
             onClick={handleAction}
+            disabled={isEnchere && timeLeft === "TERMINÉ"}
+            style={{ opacity: isEnchere && timeLeft === "TERMINÉ" ? 0.5 : 1 }}
           >
             {isEnchere ? "Enchérir" : isNego ? "Négocier avec le vendeur" : "Ajouter au panier"}
           </button>

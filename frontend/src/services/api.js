@@ -195,3 +195,17 @@ export const postProduit = async (produitData) => {
     throw error;
   }
 };
+
+export const validerCommande = async (commandeData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/panier/valider`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(commandeData)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur validation commande:", error);
+    throw error;
+  }
+};

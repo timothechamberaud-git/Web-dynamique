@@ -1,17 +1,45 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { validerCommande } from '../services/api';
 import './Cart.css';
 
 const Cart = () => {
   const { cart, getCartTotal, clearCart } = useCart();
   const navigate = useNavigate();
+  const { user } = useAuth(); // We need user info to place order
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (cart.length === 0) return;
-    alert("Paiement simulé avec succès ! Votre commande a été validée.");
-    clearCart();
-    navigate('/catalogue');
+    if (!user) {
+      alert("Vous devez être connecté pour commander.");
+      navigate('/login');
+      return;
+    }
+    
+    try {
+      const commandeData = {
+        NumU_Acheteur: user.id,
+        Total: getCartTotal(),
+        Panier: cart.map(item => ({
+          NumProd: item.id || item.NumProd,
+          Quantite: item.quantity || 1,
+          Prix: item.prix || item.price
+        }))
+      };
+      
+      const res = await validerCommande(commandeData);
+      if (res && res.status === 'success') {
+        alert("Paiement simulé avec succès ! Votre commande a été validée.");
+        clearCart();
+        navigate('/dashboard');
+      } else {
+        alert("Erreur lors de la validation: " + (res?.message || "Inconnue"));
+      }
+    } catch (error) {
+      alert("Erreur réseau.");
+    }
   };
 
   const total = getCartTotal();
