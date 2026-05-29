@@ -40,8 +40,12 @@ class Utilisateur {
         $stmt->bindParam(":motdepasse", $mot_de_passe_hashe);
 
         // Exécution de la requête
-        if($stmt->execute()) {
-            return true;
+        try {
+            if($stmt->execute()) {
+                return true;
+            }
+        } catch(PDOException $e) {
+            return false;
         }
         return false;
     }
