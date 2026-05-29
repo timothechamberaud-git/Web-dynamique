@@ -26,7 +26,7 @@ class ProduitController {
                     "titre" => $Titre,
                     "etat" => $Etat,
                     "type_vente" => $TypeTransaction,
-                    "prix" => $PrixBase,
+                    "prix" => isset($PrixActuelCalc) ? $PrixActuelCalc : $PrixBase,
                     "categorie" => $NomCat,
                     "vendeur" => $NomVendeur,
                     "NumU_Vendeur" => $NumU_Vendeur,

@@ -24,7 +24,8 @@ class Produit {
                     WHEN EXISTS (SELECT 1 FROM NEGOCIATION WHERE NumProd = p.NumProd AND Statut IN ('acceptee', 'payee')) THEN 'vendu'
                     WHEN p.TypeTransaction = 'enchere' AND EXISTS (SELECT 1 FROM ENCHERE WHERE NumProd = p.NumProd AND DateFin < NOW()) THEN 'enchere_terminee'
                     ELSE 'disponible'
-                  END as StatutVente
+                  END as StatutVente,
+                  COALESCE((SELECT PrixActuel FROM ENCHERE WHERE NumProd = p.NumProd), p.PrixBase) as PrixActuelCalc
                   FROM " . $this->table_name . " p
                   JOIN CATEGORIE c ON p.NumCat = c.NumCat
                   JOIN UTILISATEUR v ON p.NumU_Vendeur = v.NumU
