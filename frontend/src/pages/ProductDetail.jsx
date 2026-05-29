@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductsFromDatabase, getEnchere, postOffre } from '../services/api';
+import { getProductsFromDatabase, getEnchere, postOffre, initNego } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './ProductDetail.css';
@@ -128,7 +128,19 @@ const ProductDetail = () => {
         navigate('/login');
         return;
       }
-      navigate(`/nego/${product.id}`);
+      try {
+        const response = await initNego({
+          NumProd: product.id || product.NumProd,
+          NumU_Acheteur: user.id
+        });
+        if (response && response.status === 'success') {
+          navigate(`/nego/${response.NumNego}`);
+        } else {
+          alert("Erreur lors de l'initialisation du salon de négociation.");
+        }
+      } catch (err) {
+        alert("Erreur réseau.");
+      }
     } else {
       addToCart(product);
       alert(`${product.titre} a été ajouté au panier !`);

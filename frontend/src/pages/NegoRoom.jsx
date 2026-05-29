@@ -24,21 +24,21 @@ const NegoRoom = () => {
 
     const loadRoom = async () => {
       try {
-        const data = await getProductsFromDatabase();
-        const found = data.find(p => String(p.id) === String(id));
-        setProduct(found);
-
-        if (found) {
-          // Initialize or get the negotiation room
-          const initRes = await initNego({ NumProd: found.id, NumU_Acheteur: user.id });
-          if (initRes && initRes.status === 'success') {
-            setNegoId(initRes.NumNego);
-            
-            // Load messages
-            const histRes = await getHistoriqueNego(initRes.NumNego);
-            if (histRes && histRes.status === 'success') {
-              setMessages(histRes.data);
-            }
+        setNegoId(id); // id is now NumNego
+        
+        // Load messages and NumProd
+        const histRes = await getHistoriqueNego(id);
+        if (histRes && histRes.status === 'success') {
+          setMessages(histRes.data);
+          
+          // Now fetch the product using NumProd
+          if (histRes.NumProd) {
+            const data = await getProductsFromDatabase();
+            const found = data.find(p => String(p.id) === String(histRes.NumProd) || String(p.NumProd) === String(histRes.NumProd));
+            setProduct(found);
+          } else {
+            // Unlikely to happen, but safe fallback
+            setProduct({ titre: 'Produit Inconnu', prix: 'N/A' });
           }
         }
       } catch (error) {

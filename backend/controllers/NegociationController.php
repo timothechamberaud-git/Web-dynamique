@@ -47,6 +47,16 @@ class NegociationController {
 
     // Lire les messages (GET)
     public function getHistorique($numNego) {
+        // Get NumProd for this nego
+        $query = "SELECT NumProd FROM NEGOCIATION WHERE NumNego = :id";
+        $stmtProd = $this->db->prepare($query);
+        $stmtProd->bindParam(":id", $numNego);
+        $stmtProd->execute();
+        $numProd = null;
+        if($row = $stmtProd->fetch(PDO::FETCH_ASSOC)) {
+            $numProd = $row['NumProd'];
+        }
+
         $stmt = $this->nego->lireMessages($numNego);
         $messages = array();
         
@@ -55,7 +65,7 @@ class NegociationController {
         }
         
         http_response_code(200);
-        echo json_encode(["status" => "success", "data" => $messages]);
+        echo json_encode(["status" => "success", "data" => $messages, "NumProd" => $numProd]);
     }
 }
 ?>
