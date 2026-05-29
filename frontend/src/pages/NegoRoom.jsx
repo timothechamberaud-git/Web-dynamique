@@ -58,7 +58,8 @@ const NegoRoom = () => {
       const payload = {
         NumNego: negoId,
         NumU: user.id,
-        Contenu: newMessage || `Nouvelle offre de ${offerAmount} €`
+        Contenu: newMessage || `Nouvelle offre de ${offerAmount} €`,
+        MontantProp: offerAmount ? Number(offerAmount) : null
       };
       
       const res = await postNegoMessage(payload);

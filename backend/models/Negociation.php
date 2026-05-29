@@ -21,23 +21,32 @@ class Negociation {
     }
 
     // 2. Envoyer un message dans un salon
-    public function envoyerMessage($numNego, $numU, $contenu) {
-        $query = "INSERT INTO MESSAGE (NumNego, NumU, Contenu) VALUES (:numNego, :numU, :contenu)";
+    public function envoyerMessage($numNego, $numU, $contenu, $montantProp = null) {
+        $query = "INSERT INTO MESSAGE_NEGO (NumNego, NumU_Expediteur, Contenu, MontantProp) VALUES (:numNego, :numU, :contenu, :montantProp)";
         $stmt = $this->conn->prepare($query);
         
         $stmt->bindParam(":numNego", $numNego);
         $stmt->bindParam(":numU", $numU);
         $stmt->bindParam(":contenu", $contenu);
+        $stmt->bindParam(":montantProp", $montantProp);
         
-        return $stmt->execute();
+        try {
+            return $stmt->execute();
+        } catch(PDOException $e) {
+            return false;
+        }
     }
 
     // 3. Récupérer les messages d'un salon
     public function lireMessages($numNego) {
-        $query = "SELECT * FROM MESSAGE WHERE NumNego = :numNego ORDER BY DateEnvoi ASC";
+        $query = "SELECT * FROM MESSAGE_NEGO WHERE NumNego = :numNego ORDER BY DateMsg ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":numNego", $numNego);
-        $stmt->execute();
+        try {
+            $stmt->execute();
+        } catch(PDOException $e) {
+            // handle silently
+        }
         return $stmt;
     }
 }

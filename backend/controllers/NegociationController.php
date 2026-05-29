@@ -34,7 +34,8 @@ class NegociationController {
         $data = json_decode(file_get_contents("php://input"));
         
         if(!empty($data->NumNego) && !empty($data->NumU) && !empty($data->Contenu)) {
-            if($this->nego->envoyerMessage($data->NumNego, $data->NumU, $data->Contenu)) {
+            $montantProp = isset($data->MontantProp) ? $data->MontantProp : null;
+            if($this->nego->envoyerMessage($data->NumNego, $data->NumU, $data->Contenu, $montantProp)) {
                 http_response_code(201);
                 echo json_encode(["status" => "success", "message" => "Message envoyé."]);
             } else {

@@ -53,7 +53,7 @@ export const getEnchere = async (productId) => {
 
 export const postOffre = async (offreData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/enchere/offre`, {
+    const response = await fetch(`${API_BASE_URL}/enchere`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(offreData)
