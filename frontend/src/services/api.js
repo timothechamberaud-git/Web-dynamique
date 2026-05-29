@@ -1,11 +1,11 @@
-// Ce fichier remplacera apiMock.js lors de l'intégration finale avec le Backend PHP
-
-// URL de base de notre API REST (à adapter selon la configuration de votre serveur local)
-const API_BASE_URL = 'http://localhost/Mercato-Nova/backend/public/api';
+// src/services/api.js
+// Configuration de l'API locale. Assurez-vous que l'URL correspond à votre serveur local.
+// Par défaut, nous utilisons l'URL classique pour WAMP/XAMPP avec le dossier du projet.
+const API_BASE_URL = 'http://localhost/Web-dynamique/backend/public/index.php';
 
 export const getProductsFromDatabase = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products`, {
+    const response = await fetch(`${API_BASE_URL}/produits`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -16,23 +16,23 @@ export const getProductsFromDatabase = async () => {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }
     
-    return await response.json();
+    const result = await response.json();
+    return result.data || [];
   } catch (error) {
     console.error("Erreur de connexion à l'API PHP :", error);
     throw error;
   }
 };
 
-// La future fonction pour lancer une enchère vers la base de données MySQL
 export const placeBid = async (productId, amount) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}/bid`, {
+    const response = await fetch(`${API_BASE_URL}/enchere`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({ bid_amount: amount })
+      body: JSON.stringify({ produit_id: productId, montant: amount })
     });
     return await response.json();
   } catch (error) {
