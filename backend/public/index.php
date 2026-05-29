@@ -55,7 +55,24 @@ elseif ($endpoint === 'enchere' && $method === 'POST') {
     $controller = new EnchereController($db);
     $controller->postOffre();
 }
-
+// POST /nego/init -> Créer un salon de négociation
+elseif ($endpoint === 'init' && strpos($_SERVER['REQUEST_URI'], '/nego/init') !== false && $method === 'POST') {
+    require_once '../controllers/NegociationController.php';
+    $controller = new NegociationController($db);
+    $controller->initier();
+}
+// POST /nego/message -> Envoyer un message
+elseif ($endpoint === 'message' && strpos($_SERVER['REQUEST_URI'], '/nego/message') !== false && $method === 'POST') {
+    require_once '../controllers/NegociationController.php';
+    $controller = new NegociationController($db);
+    $controller->message();
+}
+// GET /nego/historique?id=X -> Récupérer les messages d'un salon
+elseif ($endpoint === 'historique' && strpos($_SERVER['REQUEST_URI'], '/nego/historique') !== false && $method === 'GET') {
+    require_once '../controllers/NegociationController.php';
+    $controller = new NegociationController($db);
+    $controller->getHistorique($_GET['id']);
+}
 // Erreur 404 -> Route non trouvée
 else {
     http_response_code(404);
