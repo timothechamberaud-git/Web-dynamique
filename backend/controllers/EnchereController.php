@@ -32,6 +32,7 @@ class EnchereController {
 
     public function payer() {
         $data = json_decode(file_get_contents("php://input"));
+        file_put_contents(__DIR__ . '/../public/error_log.txt', date('[Y-m-d H:i:s] ') . json_encode($data) . "\n", FILE_APPEND);
         if(!empty($data->NumEnchere) && !empty($data->NumU) && !empty($data->NumProd) && !empty($data->Montant)) {
             if($this->enchere->payerEnchere($data->NumEnchere, $data->NumU, $data->NumProd, $data->Montant)) {
                 echo json_encode(["status" => "success", "message" => "Enchère payée."]);

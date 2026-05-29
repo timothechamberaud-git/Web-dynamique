@@ -39,26 +39,42 @@ class Enchere {
 
     // Placer une offre (dans la table OFFRE)
     public function placerOffre($numEnchere, $numU, $montant) {
-        $query = "INSERT INTO OFFRE (NumEnchere, NumU_Acheteur, Montant) VALUES (:numEnchere, :numU, :montant)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":numEnchere", $numEnchere);
-        $stmt->bindParam(":numU", $numU);
-        $stmt->bindParam(":montant", $montant);
-        
-        if ($stmt->execute()) {
-            // Ajouter une notification au vendeur
-            $notif = "INSERT INTO NOTIFICATION (TypeNotif, Contenu, NumU_Cible, Lien, Lu) 
-                      SELECT 'Nouvelle Enchère', CONCAT('Nouvelle offre de ', :montant, ' € sur votre enchère.'), p.NumU_Vendeur, CONCAT('/produit/', p.NumProd), 0 
-                      FROM ENCHERE e JOIN PRODUIT p ON e.NumProd = p.NumProd 
-                      WHERE e.NumEnchere = :numEnchere LIMIT 1";
-            $stmtNotif = $this->conn->prepare($notif);
-            $stmtNotif->bindParam(":montant", $montant);
-            $stmtNotif->bindParam(":numEnchere", $numEnchere);
-            $stmtNotif->execute();
+        try {
+            $this->conn->beginTransaction();
+
+            $query = "INSERT INTO OFFRE (NumEnchere, NumU_Acheteur, Montant) VALUES (:numEnchere, :numU, :montant)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":numEnchere", $numEnchere);
+            $stmt->bindParam(":numU", $numU);
+            $stmt->bindParam(":montant", $montant);
             
-            return true;
+            if ($stmt->execute()) {
+                // Update PrixActuel in ENCHERE
+                $qUpdate = "UPDATE ENCHERE SET PrixActuel = :montant WHERE NumEnchere = :numEnchere";
+                $sUpdate = $this->conn->prepare($qUpdate);
+                $sUpdate->bindParam(":montant", $montant);
+                $sUpdate->bindParam(":numEnchere", $numEnchere);
+                $sUpdate->execute();
+
+                // Ajouter une notification au vendeur
+                $notif = "INSERT INTO NOTIFICATION (TypeNotif, Contenu, NumU_Cible, Lien, Lu) 
+                          SELECT 'Nouvelle Enchère', CONCAT('Nouvelle offre de ', :montant, ' € sur votre enchère.'), p.NumU_Vendeur, CONCAT('/produit/', p.NumProd), 0 
+                          FROM ENCHERE e JOIN PRODUIT p ON e.NumProd = p.NumProd 
+                          WHERE e.NumEnchere = :numEnchere LIMIT 1";
+                $stmtNotif = $this->conn->prepare($notif);
+                $stmtNotif->bindParam(":montant", $montant);
+                $stmtNotif->bindParam(":numEnchere", $numEnchere);
+                $stmtNotif->execute();
+                
+                $this->conn->commit();
+                return true;
+            }
+            $this->conn->rollBack();
+            return false;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
         }
-        return false;
     }
 
     public function payerEnchere($numEnchere, $numU, $numProd, $montant) {
@@ -93,7 +109,7 @@ class Enchere {
             $numCmd = $this->conn->lastInsertId();
 
             // 4. Insert CONTIENT
-            $stmtCont = $this->conn->prepare("INSERT INTO CONTIENT (NumCmd, NumProd, Prix) VALUES (:numCmd, :numProd, :prix)");
+            $stmtCont = $this->conn->prepare("INSERT INTO CONTIENT (NumCmd, NumProd, PrixUnit) VALUES (:numCmd, :numProd, :prix)");
             $stmtCont->bindParam(":numCmd", $numCmd);
             $stmtCont->bindParam(":numProd", $numProd);
             $stmtCont->bindParam(":prix", $montant);
@@ -112,6 +128,7 @@ class Enchere {
             return true;
         } catch (Exception $e) {
             $this->conn->rollBack();
+            file_put_contents(__DIR__ . '/../public/error_log.txt', date('[Y-m-d H:i:s] ') . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
