@@ -6,16 +6,28 @@ class Negociation {
         $this->conn = $db;
     }
 
-    // 1. Créer un salon de négociation
+    // 1. Créer ou récupérer un salon de négociation
     public function creerSalon($numProd, $numAcheteur) {
-        $query = "INSERT INTO NEGOCIATION (NumProd, NumU_Acheteur, Statut) VALUES (:numProd, :numAcheteur, 'En cours')";
+        // Vérifier si une négociation existe déjà
+        $check = "SELECT NumNego FROM NEGOCIATION WHERE NumProd = :numProd AND NumU_Acheteur = :numAcheteur LIMIT 1";
+        $stmtCheck = $this->conn->prepare($check);
+        $stmtCheck->bindParam(":numProd", $numProd);
+        $stmtCheck->bindParam(":numAcheteur", $numAcheteur);
+        $stmtCheck->execute();
+        
+        if ($row = $stmtCheck->fetch(PDO::FETCH_ASSOC)) {
+            return $row['NumNego'];
+        }
+        
+        // Sinon créer un nouveau salon
+        $query = "INSERT INTO NEGOCIATION (NumProd, NumU_Acheteur, Statut) VALUES (:numProd, :numAcheteur, 'en_cours')";
         $stmt = $this->conn->prepare($query);
         
         $stmt->bindParam(":numProd", $numProd);
         $stmt->bindParam(":numAcheteur", $numAcheteur);
         
         if($stmt->execute()) {
-            return $this->conn->lastInsertId(); // Renvoie le NumNego créé
+            return $this->conn->lastInsertId();
         }
         return false;
     }
