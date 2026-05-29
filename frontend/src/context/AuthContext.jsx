@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = sessionStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
       const response = await apiLogin({ Email: email, MotDePasse: password });
       if (response && response.status === 'success') {
         setUser(response.user);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        sessionStorage.setItem('user', JSON.stringify(response.user));
         return { success: true };
       }
       return { success: false, message: response?.message || 'Erreur de connexion' };
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
   };
 
   return (
