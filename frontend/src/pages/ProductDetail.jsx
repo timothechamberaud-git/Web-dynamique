@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getProductsFromDatabase, placeBid } from '../services/api';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getProductsFromDatabase } from '../services/api';
+import { useCart } from '../context/CartContext';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Dans l'idéal, on devrait appeler fetchProductById, 
-    // mais comme l'API PHP actuelle ne retourne que la liste globale,
-    // on récupère tout et on filtre.
     const loadProduct = async () => {
       try {
         const data = await getProductsFromDatabase();
@@ -38,10 +38,22 @@ const ProductDetail = () => {
   };
 
   const isEnchere = product.type_vente?.toLowerCase() === 'enchere';
+  const isNego = product.type_vente?.toLowerCase() === 'negociation';
+
+  const handleAction = () => {
+    if (isEnchere) {
+      alert("Enchère simulée avec succès !");
+    } else if (isNego) {
+      navigate(`/nego/${product.id}`);
+    } else {
+      addToCart(product);
+      alert(`${product.titre} a été ajouté au panier !`);
+    }
+  };
 
   return (
     <div className="product-detail-page">
-      <div className="page-header">DÉTAIL PRODUIT : {product.type_vente?.toUpperCase() || 'ACHAT'}</div>
+      <div className="page-header">DÉTAIL PRODUIT : {product.type_vente?.toUpperCase() || 'ACHAT DIRECT'}</div>
       
       <div className="detail-grid">
         <div className="detail-image-box">
@@ -50,7 +62,7 @@ const ProductDetail = () => {
         
         <div className="detail-info">
           <h1>{product.titre}</h1>
-          <p className="subtitle">État : {product.etat || 'Neuf'}. Vendeur : {product.vendeur}</p>
+          <p className="subtitle">État : {product.etat || 'Neuf'}. Vendeur : {product.vendeur || 'Boutique Nova'}</p>
           
           <div className="price-box">
             <div className="price-info">
@@ -65,15 +77,16 @@ const ProductDetail = () => {
             )}
           </div>
           
-          {isEnchere ? (
-            <button className="btn-success btn-full">Enchérir</button>
-          ) : (
-            <button className="btn-primary btn-full">Ajouter au panier</button>
-          )}
+          <button 
+            className={isEnchere ? "btn-success btn-full" : "btn-primary btn-full"}
+            onClick={handleAction}
+          >
+            {isEnchere ? "Enchérir" : isNego ? "Négocier avec le vendeur" : "Ajouter au panier"}
+          </button>
 
           <div className="description-section">
             <h4>DESCRIPTION</h4>
-            <p>Une pièce historique pour les collectionneurs avertis. Livrée avec certificat d'expertise Mercato Nova.</p>
+            <p>Une pièce historique et essentielle. Livrée avec garantie d'authenticité Mercato Nova.</p>
           </div>
         </div>
       </div>

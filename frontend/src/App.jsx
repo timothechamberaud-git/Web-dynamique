@@ -6,26 +6,55 @@ import Catalogue from './pages/Catalogue';
 import ProductDetail from './pages/ProductDetail';
 import NegoRoom from './pages/NegoRoom';
 import Cart from './pages/Cart';
+import { useCart } from './context/CartContext';
+
+function Navbar() {
+  const { cart } = useCart();
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <nav className="navbar">
+      <Link to="/" className="nav-brand">MERCATO NOVA.</Link>
+      <div className="nav-links">
+        <Link to="/catalogue">ACHETER</Link>
+        <Link to="#">VENDRE</Link>
+        <Link to="#">COLLECTION</Link>
+        <Link to="#">AIDE</Link>
+      </div>
+      <div className="nav-icons">
+        <Search />
+        <User />
+        <Link to="/cart" style={{ position: 'relative' }}>
+          <ShoppingCart />
+          {cartItemCount > 0 && (
+            <span style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              backgroundColor: 'var(--secondary)',
+              color: 'white',
+              fontSize: '0.7rem',
+              fontWeight: 'bold',
+              borderRadius: '50%',
+              width: '16px',
+              height: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {cartItemCount}
+            </span>
+          )}
+        </Link>
+      </div>
+    </nav>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <nav className="navbar">
-        <Link to="/" className="nav-brand">MERCATO NOVA.</Link>
-        <div className="nav-links">
-          <Link to="/catalogue">ACHETER</Link>
-          <Link to="#">VENDRE</Link>
-          <Link to="#">COLLECTION</Link>
-          <Link to="#">AIDE</Link>
-        </div>
-        <div className="nav-icons">
-          <Search />
-          <User />
-          <Link to="/cart">
-            <ShoppingCart />
-          </Link>
-        </div>
-      </nav>
+      <Navbar />
       
       <main className="container">
         <Routes>
