@@ -1,42 +1,105 @@
-// src/services/api.js
-// Configuration de l'API locale. Assurez-vous que l'URL correspond à votre serveur local.
-// Par défaut, nous utilisons l'URL classique pour WAMP/XAMPP avec le dossier du projet.
 const API_BASE_URL = 'http://localhost/Web-dynamique/backend/public/index.php';
 
 export const getProductsFromDatabase = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/produits`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    return result.data || [];
+    const response = await fetch(`${API_BASE_URL}/produits`);
+    if (!response.ok) throw new Error('Erreur de requête API');
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     console.error("Erreur de connexion à l'API PHP :", error);
     throw error;
   }
 };
 
-export const placeBid = async (productId, amount) => {
+export const login = async (credentials) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/enchere`, {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({ produit_id: productId, montant: amount })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
     });
     return await response.json();
   } catch (error) {
-    console.error("Erreur lors de la soumission de l'enchère :", error);
+    console.error("Erreur de connexion login :", error);
+    throw error;
+  }
+};
+
+export const register = async (userData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur d'inscription :", error);
+    throw error;
+  }
+};
+
+export const getEnchere = async (productId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/enchere?produit=${productId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching enchère:", error);
+    return null;
+  }
+};
+
+export const postOffre = async (offreData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/enchere/offre`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(offreData)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur post offre:", error);
+    throw error;
+  }
+};
+
+export const initNego = async (data) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/nego/init`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur init nego:", error);
+    throw error;
+  }
+};
+
+export const getHistoriqueNego = async (negoId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/nego/historique?id=${negoId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching historique nego:", error);
+    return null;
+  }
+};
+
+export const postNegoMessage = async (msgData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/nego/message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(msgData)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur post message nego:", error);
     throw error;
   }
 };

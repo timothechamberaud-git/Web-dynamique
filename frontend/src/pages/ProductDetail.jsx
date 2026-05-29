@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductsFromDatabase } from '../services/api';
+import { getProductsFromDatabase, getEnchere, postOffre } from '../services/api';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
@@ -10,40 +11,75 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [enchereData, setEnchereData] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const loadProduct = async () => {
+    const loadData = async () => {
       try {
         const data = await getProductsFromDatabase();
         const found = data.find(p => String(p.id) === String(id));
         setProduct(found);
+
+        if (found && found.type_vente?.toLowerCase() === 'enchere') {
+          const ench = await getEnchere(found.id);
+          if (ench && ench.status === 'success') {
+            setEnchereData(ench.data);
+          }
+        }
       } catch (error) {
         console.error("Erreur API :", error);
       } finally {
         setLoading(false);
       }
     };
-    loadProduct();
+    loadData();
   }, [id]);
 
   if (loading) return <div className="loading">Chargement...</div>;
   if (!product) return <div className="empty">Produit introuvable.</div>;
 
-  const getImage = (title) => {
-    if (title.toLowerCase().includes('maillot')) return 'https://images.unsplash.com/photo-1580087433276-6134b22db74a?q=80&w=600&auto=format&fit=crop';
-    if (title.toLowerCase().includes('vélo') || title.toLowerCase().includes('velo')) return 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=600&auto=format&fit=crop';
-    if (title.toLowerCase().includes('raquette')) return 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=600&auto=format&fit=crop';
-    if (title.toLowerCase().includes('jordan') || title.toLowerCase().includes('chaussure')) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop';
-    return 'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=600&auto=format&fit=crop';
+  const getImage = (pid) => {
+    return `/images/product_${pid}.png`;
   };
 
   const isEnchere = product.type_vente?.toLowerCase() === 'enchere';
   const isNego = product.type_vente?.toLowerCase() === 'negociation';
+  const currentPrice = isEnchere && enchereData ? enchereData.PrixActuel : product.prix;
 
-  const handleAction = () => {
+  const handleAction = async () => {
     if (isEnchere) {
-      alert("Enchère simulée avec succès !");
+      if (!user) {
+        alert("Vous devez être connecté pour enchérir.");
+        navigate('/login');
+        return;
+      }
+      const montant = prompt(`Entrez votre enchère (actuellement à ${currentPrice} €):`);
+      if (montant && Number(montant) > Number(currentPrice)) {
+        try {
+          const response = await postOffre({
+            NumEnchere: enchereData.NumEnchere,
+            NumU: user.id,
+            Montant: Number(montant)
+          });
+          if (response.status === 'success') {
+            alert("Enchère placée avec succès !");
+            setEnchereData({ ...enchereData, PrixActuel: Number(montant) });
+          } else {
+            alert(response.message || "Erreur lors de l'enchère.");
+          }
+        } catch (error) {
+          alert("Erreur réseau.");
+        }
+      } else if (montant) {
+        alert(`Votre enchère doit être supérieure à ${currentPrice} €`);
+      }
     } else if (isNego) {
+      if (!user) {
+        alert("Vous devez être connecté pour négocier.");
+        navigate('/login');
+        return;
+      }
       navigate(`/nego/${product.id}`);
     } else {
       addToCart(product);
@@ -57,7 +93,7 @@ const ProductDetail = () => {
       
       <div className="detail-grid">
         <div className="detail-image-box">
-          <img src={product.image || getImage(product.titre)} alt={product.titre} />
+          <img src={getImage(product.id || product.NumProd)} alt={product.titre} />
         </div>
         
         <div className="detail-info">
@@ -67,7 +103,7 @@ const ProductDetail = () => {
           <div className="price-box">
             <div className="price-info">
               <span className="label">Prix Actuel</span>
-              <span className="value">{Number(product.prix).toFixed(2)} €</span>
+              <span className="value">{Number(currentPrice).toFixed(2)} €</span>
             </div>
             {isEnchere && (
               <div className="time-info text-green">

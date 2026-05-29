@@ -1,16 +1,26 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Search, User, ShoppingCart } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Search, User, ShoppingCart, LogOut } from 'lucide-react';
 import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import ProductDetail from './pages/ProductDetail';
 import NegoRoom from './pages/NegoRoom';
 import Cart from './pages/Cart';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import { useCart } from './context/CartContext';
+import { useAuth } from './context/AuthContext';
 
 function Navbar() {
   const { cart } = useCart();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className="navbar">
@@ -23,7 +33,16 @@ function Navbar() {
       </div>
       <div className="nav-icons">
         <Search />
-        <User />
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{user.prenom}</span>
+            <LogOut onClick={handleLogout} style={{ cursor: 'pointer' }} />
+          </div>
+        ) : (
+          <Link to="/login" style={{ color: 'inherit' }}>
+            <User />
+          </Link>
+        )}
         <Link to="/cart" style={{ position: 'relative' }}>
           <ShoppingCart />
           {cartItemCount > 0 && (
@@ -63,6 +82,8 @@ function App() {
           <Route path="/produit/:id" element={<ProductDetail />} />
           <Route path="/nego/:id" element={<NegoRoom />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </main>
     </Router>

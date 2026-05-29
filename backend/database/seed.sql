@@ -5,8 +5,8 @@ INSERT INTO CATEGORIE (NomCat) VALUES ('Football'), ('Cyclisme'), ('Tennis'), ('
 
 -- Insérer un utilisateur vendeur et un acheteur
 INSERT IGNORE INTO UTILISATEUR (Nom, Prenom, Email, Role, MotDePasse) VALUES 
-('Expert_75', 'Jean', 'jean@expert.com', 'vendeur', 'password123'),
-('Nova', 'Acheteur', 'acheteur@nova.com', 'client', 'password123');
+('Expert_75', 'Jean', 'jean@expert.com', 'vendeur', '$2y$10$7AXkqL2o2v91vGHGH0IgLeSrnytSpdVyS4XyPvrJLQCPwI2Cf623e'),
+('Nova', 'Acheteur', 'acheteur@nova.com', 'client', '$2y$10$7AXkqL2o2v91vGHGH0IgLeSrnytSpdVyS4XyPvrJLQCPwI2Cf623e');
 
 -- Insérer des produits
 -- 1. Maillot Vintage (Enchère)

@@ -4,11 +4,8 @@ import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
   // Use a fallback image depending on the title if image is missing from DB
-  const getImage = (title) => {
-    if (title.toLowerCase().includes('maillot')) return 'https://images.unsplash.com/photo-1580087433276-6134b22db74a?q=80&w=400&auto=format&fit=crop';
-    if (title.toLowerCase().includes('vélo') || title.toLowerCase().includes('velo')) return 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=400&auto=format&fit=crop';
-    if (title.toLowerCase().includes('raquette')) return 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=400&auto=format&fit=crop';
-    return 'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=400&auto=format&fit=crop'; // default
+  const getImage = (id) => {
+    return `/images/product_${id}.png`;
   };
 
   const getBadgeType = (type) => {
@@ -22,7 +19,7 @@ const ProductCard = ({ product }) => {
   return (
     <Link to={`/produit/${product.id}`} className="product-card">
       <div className="product-image-container">
-        <img src={product.image || getImage(product.titre || product.title || '')} alt={product.titre || product.title} />
+        <img src={getImage(product.id || product.NumProd)} alt={product.titre || product.title} />
       </div>
       <div className="product-info">
         <h3>{product.titre || product.title}</h3>

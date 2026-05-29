@@ -16,12 +16,8 @@ const Cart = () => {
 
   const total = getCartTotal();
 
-  const getImage = (title) => {
-    if (title.toLowerCase().includes('maillot')) return 'https://images.unsplash.com/photo-1580087433276-6134b22db74a?q=80&w=600&auto=format&fit=crop';
-    if (title.toLowerCase().includes('vélo') || title.toLowerCase().includes('velo')) return 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=600&auto=format&fit=crop';
-    if (title.toLowerCase().includes('raquette')) return 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=600&auto=format&fit=crop';
-    if (title.toLowerCase().includes('jordan') || title.toLowerCase().includes('chaussure')) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop';
-    return 'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=600&auto=format&fit=crop';
+  const getImage = (id) => {
+    return `/images/product_${id}.png`;
   };
 
   return (
@@ -35,7 +31,7 @@ const Cart = () => {
           ) : (
             cart.map((item, index) => (
               <div key={item.id || index} className={`cart-item ${index % 2 !== 0 ? 'lighter' : ''}`}>
-                <div className="item-image" style={{ backgroundImage: `url(${getImage(item.titre)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                <div className="item-image" style={{ backgroundImage: `url(${getImage(item.id || item.NumProd)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div className="item-details">
                   <h3>{item.titre}</h3>
                   <p>{item.etat || 'Neuf'} | {item.type_vente === 'achat' ? 'Achat Direct' : 'Achat'}</p>
