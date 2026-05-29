@@ -24,19 +24,19 @@ class Utilisateur {
         $stmt = $this->conn->prepare($query);
 
         // Sécurisation des données (protection contre les failles XSS)
-        $this->nom = htmlspecialchars(strip_tags($this->Nom));
-        $this->prenom = htmlspecialchars(strip_tags($this->Prenom));
-        $this->email = htmlspecialchars(strip_tags($this->Email));
-        $this->role = htmlspecialchars(strip_tags($this->Role));
+        $this->Nom = htmlspecialchars(strip_tags($this->Nom));
+        $this->Prenom = htmlspecialchars(strip_tags($this->Prenom));
+        $this->Email = htmlspecialchars(strip_tags($this->Email));
+        $this->Role = htmlspecialchars(strip_tags($this->Role));
         
         // Hachage du mot de passe pour la sécurité (BCRYPT)
         $mot_de_passe_hashe = password_hash($this->MotDePasse, PASSWORD_BCRYPT);
 
         // Liaison des variables (Protection contre les injections SQL)
-        $stmt->bindParam(":nom", $this->nom);
-        $stmt->bindParam(":prenom", $this->prenom);
-        $stmt->bindParam(":email", $this->email);
-        $stmt->bindParam(":role", $this->role);
+        $stmt->bindParam(":nom", $this->Nom);
+        $stmt->bindParam(":prenom", $this->Prenom);
+        $stmt->bindParam(":email", $this->Email);
+        $stmt->bindParam(":role", $this->Role);
         $stmt->bindParam(":motdepasse", $mot_de_passe_hashe);
 
         // Exécution de la requête
@@ -55,8 +55,8 @@ class Utilisateur {
 
         $stmt = $this->conn->prepare($query);
         
-        $this->email = htmlspecialchars(strip_tags($this->Email));
-        $stmt->bindParam(":email", $this->email);
+        $this->Email = htmlspecialchars(strip_tags($this->Email));
+        $stmt->bindParam(":email", $this->Email);
         
         $stmt->execute();
         
