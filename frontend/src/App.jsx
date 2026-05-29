@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import Vendre from './pages/Vendre';
 import { useCart } from './context/CartContext';
 import { useAuth } from './context/AuthContext';
 import { getNotifications, markNotificationsAsRead } from './services/api';
@@ -186,6 +187,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/vendre" element={<Vendre />} />
               </Routes>
             </main>
           </>

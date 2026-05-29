@@ -99,6 +99,31 @@ elseif ($endpoint === 'read' && strpos($_SERVER['REQUEST_URI'], '/user/notificat
     $data = json_decode(file_get_contents("php://input"));
     $controller->markNotificationsAsRead($data->id ?? 0);
 }
+// GET /user/suivi-encheres?id=X
+elseif ($endpoint === 'suivi-encheres' && strpos($_SERVER['REQUEST_URI'], '/user/suivi-encheres') !== false && $method === 'GET') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $controller->getSuiviEncheres($_GET['id'] ?? 0);
+}
+// GET /user/suivi-negos?id=X
+elseif ($endpoint === 'suivi-negos' && strpos($_SERVER['REQUEST_URI'], '/user/suivi-negos') !== false && $method === 'GET') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $controller->getSuiviNegos($_GET['id'] ?? 0);
+}
+// GET /user/mes-ventes?id=X
+elseif ($endpoint === 'mes-ventes' && strpos($_SERVER['REQUEST_URI'], '/user/mes-ventes') !== false && $method === 'GET') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $controller->getMesVentes($_GET['id'] ?? 0);
+}
+// POST /produits/ajouter
+elseif ($endpoint === 'ajouter' && strpos($_SERVER['REQUEST_URI'], '/produits/ajouter') !== false && $method === 'POST') {
+    require_once '../controllers/ProduitController.php';
+    $controller = new ProduitController($db);
+    $controller->ajouter();
+}
+
 // GET /admin/signalements -> Panneau Admin
 elseif ($endpoint === 'signalements' && strpos($_SERVER['REQUEST_URI'], '/admin/signalements') !== false && $method === 'GET') {
     require_once '../controllers/AdminController.php';

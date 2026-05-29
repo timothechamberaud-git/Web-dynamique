@@ -68,5 +68,59 @@ class UserController {
         http_response_code(200);
         echo json_encode(["status" => "success"]);
     }
+
+    public function getSuiviEncheres($userId) {
+        $query = "SELECT DISTINCT e.NumEnchere, p.Titre, e.PrixActuel, p.NumProd 
+                  FROM ENCHERE e
+                  JOIN PRODUIT p ON e.NumProd = p.NumProd
+                  JOIN OFFRE o ON o.NumEnchere = e.NumEnchere
+                  WHERE o.NumU_Acheteur = :uid";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":uid", $userId);
+        $stmt->execute();
+        
+        $encheres = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $encheres[] = $row;
+        }
+
+        http_response_code(200);
+        echo json_encode(["status" => "success", "data" => $encheres]);
+    }
+
+    public function getSuiviNegos($userId) {
+        $query = "SELECT n.NumNego, p.Titre, p.PrixBase, n.Statut, p.NumProd 
+                  FROM NEGOCIATION n
+                  JOIN PRODUIT p ON n.NumProd = p.NumProd
+                  WHERE n.NumU_Acheteur = :uid OR p.NumU_Vendeur = :uid";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":uid", $userId);
+        $stmt->execute();
+        
+        $negos = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $negos[] = $row;
+        }
+
+        http_response_code(200);
+        echo json_encode(["status" => "success", "data" => $negos]);
+    }
+
+    public function getMesVentes($userId) {
+        $query = "SELECT p.NumProd, p.Titre, p.TypeTransaction, p.PrixBase 
+                  FROM PRODUIT p
+                  WHERE p.NumU_Vendeur = :uid";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":uid", $userId);
+        $stmt->execute();
+        
+        $ventes = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $ventes[] = $row;
+        }
+
+        http_response_code(200);
+        echo json_encode(["status" => "success", "data" => $ventes]);
+    }
 }
 ?>

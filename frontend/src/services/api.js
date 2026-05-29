@@ -148,3 +148,50 @@ export const getSignalements = async () => {
     return null;
   }
 };
+
+export const getSuiviEncheres = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/suivi-encheres?id=${userId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching suivi encheres:", error);
+    return null;
+  }
+};
+
+export const getSuiviNegos = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/suivi-negos?id=${userId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching suivi negos:", error);
+    return null;
+  }
+};
+
+export const getMesVentes = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/mes-ventes?id=${userId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching mes ventes:", error);
+    return null;
+  }
+};
+
+export const postProduit = async (produitData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/produits/ajouter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(produitData)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur ajout produit:", error);
+    throw error;
+  }
+};

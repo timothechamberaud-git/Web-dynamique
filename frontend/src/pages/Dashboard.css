@@ -95,3 +95,47 @@
   display: flex;
   gap: 20px;
 }
+
+/* Tracking Sections */
+.tracking-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.tracking-section h3 {
+  font-family: 'Monument Extended', sans-serif;
+  color: #111424;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #111424;
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+.tracking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.tracking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.tracking-info h4 {
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+
+.tracking-info p {
+  color: #8fa0a8;
+  font-size: 0.9rem;
+}
