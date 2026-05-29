@@ -4,14 +4,20 @@ import ProductCard from '../components/ProductCard';
 import './Catalogue.css';
 
 const Catalogue = () => {
-  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [selectedSports, setSelectedSports] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const data = await getProductsFromDatabase();
-        setProducts(data.filter(p => p.StatutVente === 'disponible'));
+        const disp = data.filter(p => p.StatutVente === 'disponible');
+        setAllProducts(disp);
+        setFilteredProducts(disp);
       } catch (error) {
         console.error("Erreur API :", error);
       } finally {
@@ -21,6 +27,34 @@ const Catalogue = () => {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+    let result = allProducts;
+    if (selectedSports.length > 0) {
+      result = result.filter(p => selectedSports.includes(p.categorie));
+    }
+    if (selectedTypes.length > 0) {
+      result = result.filter(p => selectedTypes.includes(p.type_vente));
+    }
+    setFilteredProducts(result);
+  }, [selectedSports, selectedTypes, allProducts]);
+
+  const handleSportToggle = (sport) => {
+    setSelectedSports(prev => prev.includes(sport) ? prev.filter(s => s !== sport) : [...prev, sport]);
+  };
+
+  const handleTypeToggle = (type) => {
+    setSelectedTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
+  };
+
+  const availableSports = [...new Set(allProducts.map(p => p.categorie))];
+  const availableTypes = [...new Set(allProducts.map(p => p.type_vente))];
+
+  const typeLabels = {
+    'enchere': 'Enchères',
+    'immediat': 'Achat Direct',
+    'nego': 'Négociation'
+  };
+
   return (
     <div className="catalogue">
       <div className="page-header">CATALOGUE DE RECHERCHE</div>
@@ -29,27 +63,44 @@ const Catalogue = () => {
         <aside className="sidebar">
           <div className="filter-group">
             <h4>SPORTS</h4>
-            <label><input type="checkbox" defaultChecked /> Football</label>
-            <label><input type="checkbox" /> Tennis</label>
-            <label><input type="checkbox" /> Fitness</label>
+            {availableSports.map(sport => (
+              <label key={sport}>
+                <input 
+                  type="checkbox" 
+                  checked={selectedSports.includes(sport)}
+                  onChange={() => handleSportToggle(sport)} 
+                /> 
+                {sport}
+              </label>
+            ))}
+            {availableSports.length === 0 && <span style={{fontSize: '12px', color: '#999'}}>Aucun sport</span>}
           </div>
           
           <div className="filter-group">
             <h4>TYPE DE VENTE</h4>
-            <label><input type="checkbox" defaultChecked /> Enchères</label>
-            <label><input type="checkbox" /> Achat Direct</label>
+            {availableTypes.map(type => (
+              <label key={type}>
+                <input 
+                  type="checkbox" 
+                  checked={selectedTypes.includes(type)}
+                  onChange={() => handleTypeToggle(type)} 
+                /> 
+                {typeLabels[type] || type}
+              </label>
+            ))}
+            {availableTypes.length === 0 && <span style={{fontSize: '12px', color: '#999'}}>Aucun type</span>}
           </div>
         </aside>
 
         <div className="product-grid">
           {loading ? (
             <div className="loading">Chargement du catalogue...</div>
-          ) : products.length > 0 ? (
-            products.map(product => (
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))
           ) : (
-            <div className="empty">Aucun produit trouvé.</div>
+            <div className="empty">Aucun produit ne correspond à vos filtres.</div>
           )}
         </div>
       </div>
