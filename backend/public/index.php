@@ -73,6 +73,13 @@ elseif ($endpoint === 'historique' && strpos($_SERVER['REQUEST_URI'], '/nego/his
     $controller = new NegociationController($db);
     $controller->getHistorique($_GET['id']);
 }
+
+// POST /commande/valider -> Transformer le panier en commande
+elseif ($endpoint === 'valider' && strpos($_SERVER['REQUEST_URI'], '/commande/valider') !== false && $method === 'POST') {
+    require_once '../controllers/CommandeController.php';
+    $controller = new CommandeController($db);
+    $controller->validerPanier();
+}
 // Erreur 404 -> Route non trouvée
 else {
     http_response_code(404);
