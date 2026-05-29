@@ -109,12 +109,11 @@ export const payerNego = async (payload) => {
 
 export const getHistoriqueNego = async (negoId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/nego/historique?id=${negoId}`);
-    if (!response.ok) return null;
+    const response = await fetch(`${API_BASE_URL}/nego/historique?id=${negoId}&t=${Date.now()}`);
     return await response.json();
   } catch (error) {
-    console.error("Erreur fetching historique nego:", error);
-    return null;
+    console.error("Erreur API:", error);
+    throw error;
   }
 };
 
