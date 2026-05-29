@@ -11,7 +11,7 @@ const Catalogue = () => {
     const loadProducts = async () => {
       try {
         const data = await getProductsFromDatabase();
-        setProducts(data);
+        setProducts(data.filter(p => p.StatutVente === 'disponible'));
       } catch (error) {
         console.error("Erreur API :", error);
       } finally {

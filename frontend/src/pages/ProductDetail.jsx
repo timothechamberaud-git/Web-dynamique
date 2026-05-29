@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductsFromDatabase, getEnchere, postOffre, initNego } from '../services/api';
+import { getProductsFromDatabase, getEnchere, postOffre, initNego, payerEnchere } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './ProductDetail.css';
@@ -94,12 +94,37 @@ const ProductDetail = () => {
   const handleAction = async () => {
     if (isEnchere) {
       if (!user) {
-        alert("Vous devez être connecté pour enchérir.");
+        alert("Vous devez être connecté pour interagir.");
         navigate('/login');
         return;
       }
       if (timeLeft === "TERMINÉ") {
-        alert("L'enchère est terminée.");
+        if (enchereData?.IsPaid) {
+          alert("L'enchère est déjà payée.");
+          return;
+        }
+        if (String(user.id || user.NumU) === String(enchereData?.WinnerId)) {
+          if (window.confirm(`Confirmer le paiement de ${Number(enchereData.WinnerMontant).toFixed(2)} € pour finaliser la commande ?`)) {
+            try {
+              const res = await payerEnchere({
+                NumEnchere: enchereData.NumEnchere,
+                NumU: user.id || user.NumU,
+                NumProd: product.id || product.NumProd,
+                Montant: enchereData.WinnerMontant
+              });
+              if (res.status === 'success') {
+                alert("Paiement validé !");
+                window.location.reload();
+              } else {
+                alert("Erreur lors du paiement.");
+              }
+            } catch (e) {
+              alert("Erreur réseau.");
+            }
+          }
+        } else {
+          alert("Vous n'avez pas remporté cette enchère.");
+        }
         return;
       }
       const montant = prompt(`Entrez votre enchère (actuellement à ${currentPrice} €):`);
@@ -107,7 +132,7 @@ const ProductDetail = () => {
         try {
           const response = await postOffre({
             NumEnchere: enchereData.NumEnchere,
-            NumU: user.id,
+            NumU: user.id || user.NumU,
             Montant: Number(montant)
           });
           if (response.status === 'success') {
@@ -131,7 +156,7 @@ const ProductDetail = () => {
       try {
         const response = await initNego({
           NumProd: product.id || product.NumProd,
-          NumU_Acheteur: user.id
+          NumU_Acheteur: user.id || user.NumU
         });
         if (response && response.status === 'success') {
           navigate(`/nego/${response.NumNego}`);
@@ -145,6 +170,34 @@ const ProductDetail = () => {
       addToCart(product);
       alert(`${product.titre} a été ajouté au panier !`);
     }
+  };
+
+  const getButtonText = () => {
+    if (user && String(product.NumU_Vendeur) === String(user.id || user.NumU)) {
+      return "C'est votre produit";
+    }
+    if (isEnchere) {
+      if (timeLeft === "TERMINÉ") {
+        if (enchereData?.IsPaid) return "Enchère conclue et payée";
+        if (String(user?.id || user?.NumU) === String(enchereData?.WinnerId)) return `Procéder au paiement (${Number(enchereData?.WinnerMontant || 0).toFixed(2)} €)`;
+        return "Enchère terminée";
+      }
+      return "Enchérir";
+    }
+    if (isNego) return "Négocier avec le vendeur";
+    if (product.StatutVente === 'vendu') return "Produit indisponible";
+    return "Ajouter au panier";
+  };
+
+  const isButtonDisabled = () => {
+    if (user && String(product.NumU_Vendeur) === String(user.id || user.NumU)) return true;
+    if (product.StatutVente === 'vendu') return true;
+    if (isEnchere && timeLeft === "TERMINÉ") {
+      if (enchereData?.IsPaid) return true;
+      if (String(user?.id || user?.NumU) !== String(enchereData?.WinnerId)) return true;
+      return false; // Winner can pay
+    }
+    return false;
   };
 
   return (
@@ -174,18 +227,12 @@ const ProductDetail = () => {
           </div>
           
           <button 
-            className={isEnchere ? "btn-success btn-full" : "btn-primary btn-full"}
+            className={isEnchere && (!isButtonDisabled() || getButtonText().includes('paiement')) ? "btn-success btn-full" : "btn-primary btn-full"}
             onClick={handleAction}
-            disabled={(isEnchere && timeLeft === "TERMINÉ") || (user && String(product.NumU_Vendeur) === String(user.id))}
-            style={{ opacity: (isEnchere && timeLeft === "TERMINÉ") || (user && String(product.NumU_Vendeur) === String(user.id)) ? 0.5 : 1, cursor: (user && String(product.NumU_Vendeur) === String(user.id)) ? 'not-allowed' : 'pointer' }}
+            disabled={isButtonDisabled()}
+            style={{ opacity: isButtonDisabled() ? 0.5 : 1, cursor: isButtonDisabled() ? 'not-allowed' : 'pointer' }}
           >
-            {user && String(product.NumU_Vendeur) === String(user.id) 
-              ? "C'est votre produit" 
-              : isEnchere 
-                ? "Enchérir" 
-                : isNego 
-                  ? "Négocier avec le vendeur" 
-                  : "Ajouter au panier"}
+            {getButtonText()}
           </button>
 
           <div className="description-section">

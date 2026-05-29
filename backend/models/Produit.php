@@ -18,12 +18,16 @@ class Produit {
 
     // 1. Lire tous les produits avec les détails du vendeur et de la catégorie
     public function lireTous() {
-        $query = "SELECT p.*, c.NomCat, v.Nom as NomVendeur 
+        $query = "SELECT p.*, c.NomCat, v.Nom as NomVendeur,
+                  CASE
+                    WHEN EXISTS (SELECT 1 FROM CONTIENT WHERE NumProd = p.NumProd) THEN 'vendu'
+                    WHEN EXISTS (SELECT 1 FROM NEGOCIATION WHERE NumProd = p.NumProd AND Statut IN ('acceptee', 'payee')) THEN 'vendu'
+                    WHEN p.TypeTransaction = 'enchere' AND EXISTS (SELECT 1 FROM ENCHERE WHERE NumProd = p.NumProd AND DateFin < NOW()) THEN 'enchere_terminee'
+                    ELSE 'disponible'
+                  END as StatutVente
                   FROM " . $this->table_name . " p
                   JOIN CATEGORIE c ON p.NumCat = c.NumCat
                   JOIN UTILISATEUR v ON p.NumU_Vendeur = v.NumU
-                  WHERE p.NumProd NOT IN (SELECT NumProd FROM CONTIENT)
-                  AND p.NumProd NOT IN (SELECT NumProd FROM NEGOCIATION WHERE Statut IN ('acceptee', 'payee'))
                   ORDER BY p.NumProd DESC";
 
         $stmt = $this->conn->prepare($query);

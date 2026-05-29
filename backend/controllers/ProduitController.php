@@ -29,7 +29,8 @@ class ProduitController {
                     "prix" => $PrixBase,
                     "categorie" => $NomCat,
                     "vendeur" => $NomVendeur,
-                    "NumU_Vendeur" => $NumU_Vendeur
+                    "NumU_Vendeur" => $NumU_Vendeur,
+                    "StatutVente" => $StatutVente
                 );
                 array_push($produits_arr, $produit_item);
             }

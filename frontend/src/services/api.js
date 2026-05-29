@@ -42,7 +42,7 @@ export const register = async (userData) => {
 
 export const getEnchere = async (productId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/enchere?produit=${productId}`);
+    const response = await fetch(`${API_BASE_URL}/enchere?produit=${productId}&t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -61,6 +61,20 @@ export const postOffre = async (offreData) => {
     return await response.json();
   } catch (error) {
     console.error("Erreur post offre:", error);
+    throw error;
+  }
+};
+
+export const payerEnchere = async (payload) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/enchere/payer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur paiement enchere:", error);
     throw error;
   }
 };

@@ -143,6 +143,13 @@ elseif ($endpoint === 'signalements' && strpos($_SERVER['REQUEST_URI'], '/admin/
     $controller->getSignalements();
 }
 
+// POST /enchere/payer -> Payer une enchère terminée
+elseif ($endpoint === 'payer' && strpos($_SERVER['REQUEST_URI'], '/enchere/payer') !== false && $method === 'POST') {
+    require_once '../controllers/EnchereController.php';
+    $controller = new EnchereController($db);
+    $controller->payer();
+}
+
 // Erreur 404 -> Route non trouvée
 else {
     http_response_code(404);
