@@ -139,6 +139,7 @@ class Negociation {
             return true;
         } catch (PDOException $e) {
             $this->conn->rollBack();
+            echo "Erreur DB: " . $e->getMessage() . "\n";
             return false;
         }
     }

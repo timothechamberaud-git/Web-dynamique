@@ -67,6 +67,12 @@ elseif ($endpoint === 'message' && strpos($_SERVER['REQUEST_URI'], '/nego/messag
     $controller = new NegociationController($db);
     $controller->message();
 }
+// POST /nego/accepter -> Accepter une offre
+elseif ($endpoint === 'accepter' && strpos($_SERVER['REQUEST_URI'], '/nego/accepter') !== false && $method === 'POST') {
+    require_once '../controllers/NegociationController.php';
+    $controller = new NegociationController($db);
+    $controller->accepter();
+}
 // GET /nego/historique?id=X -> Récupérer les messages d'un salon
 elseif ($endpoint === 'historique' && strpos($_SERVER['REQUEST_URI'], '/nego/historique') !== false && $method === 'GET') {
     require_once '../controllers/NegociationController.php';
