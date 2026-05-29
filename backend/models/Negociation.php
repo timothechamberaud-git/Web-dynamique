@@ -43,7 +43,21 @@ class Negociation {
         $stmt->bindParam(":montantProp", $montantProp);
         
         try {
-            return $stmt->execute();
+            if ($stmt->execute()) {
+                // Notifier l'autre partie
+                $notif = "INSERT INTO NOTIFICATION (TypeNotif, Contenu, NumU_Cible, Lien, Lu)
+                          SELECT 'Négociation', 'Nouveau message ou offre dans votre salle de négociation', 
+                                 IF(NumU_Acheteur = :expediteur, p.NumU_Vendeur, NumU_Acheteur), 
+                                 CONCAT('/nego/', NumNego), 0 
+                          FROM NEGOCIATION n JOIN PRODUIT p ON n.NumProd = p.NumProd 
+                          WHERE NumNego = :numNego LIMIT 1";
+                $stmtNotif = $this->conn->prepare($notif);
+                $stmtNotif->bindParam(":expediteur", $numU);
+                $stmtNotif->bindParam(":numNego", $numNego);
+                $stmtNotif->execute();
+                return true;
+            }
+            return false;
         } catch(PDOException $e) {
             return false;
         }

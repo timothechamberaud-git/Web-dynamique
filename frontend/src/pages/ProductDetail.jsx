@@ -176,10 +176,16 @@ const ProductDetail = () => {
           <button 
             className={isEnchere ? "btn-success btn-full" : "btn-primary btn-full"}
             onClick={handleAction}
-            disabled={isEnchere && timeLeft === "TERMINÉ"}
-            style={{ opacity: isEnchere && timeLeft === "TERMINÉ" ? 0.5 : 1 }}
+            disabled={(isEnchere && timeLeft === "TERMINÉ") || (user && String(product.NumU_Vendeur) === String(user.id))}
+            style={{ opacity: (isEnchere && timeLeft === "TERMINÉ") || (user && String(product.NumU_Vendeur) === String(user.id)) ? 0.5 : 1, cursor: (user && String(product.NumU_Vendeur) === String(user.id)) ? 'not-allowed' : 'pointer' }}
           >
-            {isEnchere ? "Enchérir" : isNego ? "Négocier avec le vendeur" : "Ajouter au panier"}
+            {user && String(product.NumU_Vendeur) === String(user.id) 
+              ? "C'est votre produit" 
+              : isEnchere 
+                ? "Enchérir" 
+                : isNego 
+                  ? "Négocier avec le vendeur" 
+                  : "Ajouter au panier"}
           </button>
 
           <div className="description-section">

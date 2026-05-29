@@ -33,6 +33,15 @@ class Commande {
                 $stmtContient->bindParam(":quantite", $item->Quantite);
                 $stmtContient->bindParam(":prixUnitaire", $item->Prix);
                 $stmtContient->execute();
+                
+                // Ajouter une notification au vendeur
+                $notif = "INSERT INTO NOTIFICATION (TypeNotif, Contenu, NumU_Cible, Lien, Lu) 
+                          SELECT 'Vente', 'Un de vos produits a été acheté en direct !', NumU_Vendeur, CONCAT('/produit/', :numProd2), 0 
+                          FROM PRODUIT WHERE NumProd = :numProd LIMIT 1";
+                $stmtNotif = $this->conn->prepare($notif);
+                $stmtNotif->bindParam(":numProd", $item->NumProd);
+                $stmtNotif->bindParam(":numProd2", $item->NumProd);
+                $stmtNotif->execute();
             }
 
             // 4. Si tout s'est bien passé, on valide la transaction définitivement
