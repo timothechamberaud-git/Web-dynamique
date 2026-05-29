@@ -78,7 +78,7 @@ class Negociation {
         return $stmt;
     }
 
-    // Accepter une offre
+    // Accepter une offre (Etape 1 : Accord sur le prix, en attente de paiement)
     public function accepterOffre($numNego, $montantAccepte, $numU_Accepteur) {
         $this->conn->beginTransaction();
         try {
@@ -88,43 +88,20 @@ class Negociation {
             $s1->bindParam(":numNego", $numNego);
             $s1->execute();
 
-            // 2. Fetch nego details
-            $q2 = "SELECT NumProd, NumU_Acheteur FROM NEGOCIATION WHERE NumNego = :numNego";
-            $s2 = $this->conn->prepare($q2);
-            $s2->bindParam(":numNego", $numNego);
-            $s2->execute();
-            $negoInfo = $s2->fetch(PDO::FETCH_ASSOC);
-            $numProd = $negoInfo['NumProd'];
-            $acheteur = $negoInfo['NumU_Acheteur'];
-
-            // 3. Insert into COMMANDE
-            $q3 = "INSERT INTO COMMANDE (NumU_Acheteur, MontantTotal) VALUES (:acheteur, :montant)";
-            $s3 = $this->conn->prepare($q3);
-            $s3->bindParam(":acheteur", $acheteur);
-            $s3->bindParam(":montant", $montantAccepte);
-            $s3->execute();
-            $numCmd = $this->conn->lastInsertId();
-
-            // 4. Insert into CONTIENT
-            $q4 = "INSERT INTO CONTIENT (NumCmd, NumProd, Quantite, PrixUnit) VALUES (:cmd, :prod, 1, :montant)";
-            $s4 = $this->conn->prepare($q4);
-            $s4->bindParam(":cmd", $numCmd);
-            $s4->bindParam(":prod", $numProd);
-            $s4->bindParam(":montant", $montantAccepte);
-            $s4->execute();
-
-            // 5. Add a system message to the Nego
-            $msg = "Offre de " . $montantAccepte . " € acceptée ! Le produit a été vendu.";
-            $q5 = "INSERT INTO MESSAGE_NEGO (NumNego, NumU_Expediteur, Contenu) VALUES (:numNego, :accepteur, :msg)";
+            // 2. Add a system message to the Nego (to save the amount for the payment step)
+            $msg = "Offre de " . $montantAccepte . " € acceptée ! En attente du paiement de l'acheteur.";
+            // We use MontantProp to store the accepted amount cleanly for the frontend/backend to retrieve
+            $q5 = "INSERT INTO MESSAGE_NEGO (NumNego, NumU_Expediteur, Contenu, MontantProp) VALUES (:numNego, :accepteur, :msg, :montant)";
             $s5 = $this->conn->prepare($q5);
             $s5->bindParam(":numNego", $numNego);
             $s5->bindParam(":accepteur", $numU_Accepteur);
             $s5->bindParam(":msg", $msg);
+            $s5->bindParam(":montant", $montantAccepte);
             $s5->execute();
 
-            // 6. Notify the OTHER party
+            // 3. Notify the OTHER party
             $notif = "INSERT INTO NOTIFICATION (TypeNotif, Contenu, NumU_Cible, Lien, Lu)
-                      SELECT 'Négociation', 'Une offre a été acceptée dans votre salle !', 
+                      SELECT 'Négociation', 'Une offre a été acceptée ! Le paiement est en attente.', 
                              IF(NumU_Acheteur = :accepteur, p.NumU_Vendeur, NumU_Acheteur), 
                              CONCAT('/nego/', :numNego2), 0 
                       FROM NEGOCIATION n JOIN PRODUIT p ON n.NumProd = p.NumProd 
@@ -139,7 +116,71 @@ class Negociation {
             return true;
         } catch (PDOException $e) {
             $this->conn->rollBack();
-            echo "Erreur DB: " . $e->getMessage() . "\n";
+            return false;
+        }
+    }
+
+    // Payer une offre acceptée (Etape 2 : Création de la commande)
+    public function payerOffre($numNego, $montantPaye, $numU_Acheteur) {
+        $this->conn->beginTransaction();
+        try {
+            // 1. Check if nego is 'acceptee' and belongs to this buyer
+            $qCheck = "SELECT NumProd FROM NEGOCIATION WHERE NumNego = :numNego AND NumU_Acheteur = :acheteur AND Statut = 'acceptee'";
+            $sCheck = $this->conn->prepare($qCheck);
+            $sCheck->bindParam(":numNego", $numNego);
+            $sCheck->bindParam(":acheteur", $numU_Acheteur);
+            $sCheck->execute();
+            if(!($negoInfo = $sCheck->fetch(PDO::FETCH_ASSOC))) {
+                return false;
+            }
+            $numProd = $negoInfo['NumProd'];
+
+            // 2. Update Nego status
+            $q1 = "UPDATE NEGOCIATION SET Statut = 'payee' WHERE NumNego = :numNego";
+            $s1 = $this->conn->prepare($q1);
+            $s1->bindParam(":numNego", $numNego);
+            $s1->execute();
+
+            // 3. Insert into COMMANDE
+            $q3 = "INSERT INTO COMMANDE (NumU_Acheteur, MontantTotal) VALUES (:acheteur, :montant)";
+            $s3 = $this->conn->prepare($q3);
+            $s3->bindParam(":acheteur", $numU_Acheteur);
+            $s3->bindParam(":montant", $montantPaye);
+            $s3->execute();
+            $numCmd = $this->conn->lastInsertId();
+
+            // 4. Insert into CONTIENT
+            $q4 = "INSERT INTO CONTIENT (NumCmd, NumProd, Quantite, PrixUnit) VALUES (:cmd, :prod, 1, :montant)";
+            $s4 = $this->conn->prepare($q4);
+            $s4->bindParam(":cmd", $numCmd);
+            $s4->bindParam(":prod", $numProd);
+            $s4->bindParam(":montant", $montantPaye);
+            $s4->execute();
+
+            // 5. Add a system message
+            $msg = "Le paiement de " . $montantPaye . " € a été validé ! Vente conclue définitivement.";
+            $q5 = "INSERT INTO MESSAGE_NEGO (NumNego, NumU_Expediteur, Contenu) VALUES (:numNego, :acheteur, :msg)";
+            $s5 = $this->conn->prepare($q5);
+            $s5->bindParam(":numNego", $numNego);
+            $s5->bindParam(":acheteur", $numU_Acheteur);
+            $s5->bindParam(":msg", $msg);
+            $s5->execute();
+
+            // 6. Notify the seller
+            $notif = "INSERT INTO NOTIFICATION (TypeNotif, Contenu, NumU_Cible, Lien, Lu)
+                      SELECT 'Vente Conclue', 'Votre produit a été payé suite à une négociation !', 
+                             p.NumU_Vendeur, CONCAT('/nego/', :numNego2), 0 
+                      FROM NEGOCIATION n JOIN PRODUIT p ON n.NumProd = p.NumProd 
+                      WHERE NumNego = :numNego3 LIMIT 1";
+            $s6 = $this->conn->prepare($notif);
+            $s6->bindParam(":numNego2", $numNego);
+            $s6->bindParam(":numNego3", $numNego);
+            $s6->execute();
+
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
             return false;
         }
     }

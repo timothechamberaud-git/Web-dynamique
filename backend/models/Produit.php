@@ -23,6 +23,7 @@ class Produit {
                   JOIN CATEGORIE c ON p.NumCat = c.NumCat
                   JOIN UTILISATEUR v ON p.NumU_Vendeur = v.NumU
                   WHERE p.NumProd NOT IN (SELECT NumProd FROM CONTIENT)
+                  AND p.NumProd NOT IN (SELECT NumProd FROM NEGOCIATION WHERE Statut IN ('acceptee', 'payee'))
                   ORDER BY p.NumProd DESC";
 
         $stmt = $this->conn->prepare($query);

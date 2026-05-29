@@ -62,16 +62,37 @@ class NegociationController {
         }
     }
 
+    // Payer une offre acceptée
+    public function payer() {
+        $data = json_decode(file_get_contents("php://input"));
+        if(!empty($data->NumNego) && !empty($data->MontantPaye) && !empty($data->NumU_Acheteur)) {
+            if($this->nego->payerOffre($data->NumNego, $data->MontantPaye, $data->NumU_Acheteur)) {
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Paiement validé."]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["status" => "error", "message" => "Erreur lors du paiement."]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Données incomplètes."]);
+        }
+    }
+
     // Lire les messages (GET)
     public function getHistorique($numNego) {
-        // Get NumProd for this nego
-        $query = "SELECT NumProd FROM NEGOCIATION WHERE NumNego = :id";
+        // Get NumProd, Statut, NumU_Acheteur for this nego
+        $query = "SELECT NumProd, Statut, NumU_Acheteur FROM NEGOCIATION WHERE NumNego = :id";
         $stmtProd = $this->db->prepare($query);
         $stmtProd->bindParam(":id", $numNego);
         $stmtProd->execute();
         $numProd = null;
+        $statut = 'en_cours';
+        $acheteur = null;
         if($row = $stmtProd->fetch(PDO::FETCH_ASSOC)) {
             $numProd = $row['NumProd'];
+            $statut = $row['Statut'];
+            $acheteur = $row['NumU_Acheteur'];
         }
 
         $stmt = $this->nego->lireMessages($numNego);
@@ -82,7 +103,13 @@ class NegociationController {
         }
         
         http_response_code(200);
-        echo json_encode(["status" => "success", "data" => $messages, "NumProd" => $numProd]);
+        echo json_encode([
+            "status" => "success", 
+            "data" => $messages, 
+            "NumProd" => $numProd, 
+            "Statut" => $statut,
+            "NumU_Acheteur" => $acheteur
+        ]);
     }
 }
 ?>
