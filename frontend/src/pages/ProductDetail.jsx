@@ -40,10 +40,9 @@ const ProductDetail = () => {
   useEffect(() => {
     if (!enchereData) return;
     
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
+      // 1. Update time left
       const now = new Date().getTime();
-      // Assume DateFin is a string like "2026-05-30 14:00:00", we need to parse it safely
-      // In JS, '2026-05-30T14:00:00' is safer for Date parsing.
       const safeDateStr = enchereData.DateFin.replace(' ', 'T');
       const end = new Date(safeDateStr).getTime();
       const distance = end - now;
@@ -61,10 +60,25 @@ const ProductDetail = () => {
 
       const format = val => String(val).padStart(2, '0');
       setTimeLeft(d > 0 ? `${d}j ${format(h)}:${format(m)}:${format(s)}` : `${format(h)}:${format(m)}:${format(s)}`);
+      
+      // 2. Poll for new price every 5 seconds
+      if (s % 5 === 0 && product) {
+        try {
+          const ench = await getEnchere(product.id || product.NumProd);
+          if (ench && ench.status === 'success') {
+            // Update enchereData if the price changed
+            if (ench.data.PrixActuel !== enchereData.PrixActuel) {
+              setEnchereData(ench.data);
+            }
+          }
+        } catch (e) {
+          // ignore network errors on poll
+        }
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [enchereData]);
+  }, [enchereData, product]);
 
   if (loading) return <div className="loading">Chargement...</div>;
   if (!product) return <div className="empty">Produit introuvable.</div>;

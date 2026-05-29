@@ -10,15 +10,12 @@ class Database {
     // Méthode pour obtenir la connexion à la base de données
     public function getConnection() {
         $this->conn = null;
-
         try {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8mb4", $this->username, $this->password);
-            // Activer l'affichage des erreurs SQL pour faciliter le débogage
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $exception) {
-            echo json_encode(["status" => "error", "message" => "Erreur de connexion : " . $exception->getMessage()]);
+            echo "Erreur de connexion : " . $exception->getMessage();
         }
-
         return $this->conn;
     }
 }

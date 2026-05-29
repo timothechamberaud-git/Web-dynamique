@@ -11,6 +11,7 @@ const ProductCard = ({ product }) => {
   const getBadgeType = (type) => {
     switch(type?.toLowerCase()) {
       case 'enchere': return 'ENCHÈRE LIVE';
+      case 'nego': 
       case 'negociation': return 'NÉGOCIABLE';
       default: return 'ACHAT DIRECT';
     }
