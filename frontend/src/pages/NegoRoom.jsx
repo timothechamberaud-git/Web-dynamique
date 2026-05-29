@@ -138,7 +138,8 @@ const NegoRoom = () => {
           <p className="empty-chat">Aucun message pour le moment. Brisez la glace !</p>
         ) : (
           messages.map((msg, idx) => {
-            const isMe = String(msg.NumU_Expediteur) === String(user.id);
+            const currentUserId = user?.id || user?.NumU;
+            const isMe = String(msg.NumU_Expediteur) === String(currentUserId);
             return (
               <div key={idx} className={`chat-message ${isMe ? 'message-me' : 'message-other'}`}>
                 <div className="msg-content">{msg.Contenu}</div>
@@ -184,7 +185,7 @@ const NegoRoom = () => {
       
       {negoStatus === 'acceptee' && (
         <div className="nego-input-area" style={{ justifyContent: 'center', backgroundColor: '#eaf4ea', border: '1px solid #4caf50' }}>
-          {String(user.id) === String(negoAcheteurId) ? (
+          {String(user?.id || user?.NumU) === String(negoAcheteurId) ? (
             <button 
               onClick={() => handlePayer(getLastOfferAmount())} 
               className="btn-success" 
