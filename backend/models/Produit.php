@@ -16,12 +16,13 @@ class Produit {
         $this->conn = $db;
     }
 
-    // Méthode pour récupérer tous les produits
+    // 1. Lire tous les produits avec les détails du vendeur et de la catégorie
     public function lireTous() {
-        $query = "SELECT p.*, c.NomCat, u.Nom AS NomVendeur 
+        $query = "SELECT p.*, c.NomCat, v.Nom as NomVendeur 
                   FROM " . $this->table_name . " p
-                  LEFT JOIN CATEGORIE c ON p.NumCat = c.NumCat
-                  LEFT JOIN UTILISATEUR u ON p.NumU_Vendeur = u.NumU
+                  JOIN CATEGORIE c ON p.NumCat = c.NumCat
+                  JOIN UTILISATEUR v ON p.NumU_Vendeur = v.NumU
+                  WHERE p.NumProd NOT IN (SELECT NumProd FROM CONTIENT)
                   ORDER BY p.NumProd DESC";
 
         $stmt = $this->conn->prepare($query);

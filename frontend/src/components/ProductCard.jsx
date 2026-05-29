@@ -22,7 +22,14 @@ const ProductCard = ({ product }) => {
         <img src={getImage(product.id || product.NumProd)} alt={product.titre || product.title} />
       </div>
       <div className="product-info">
-        <h3>{product.titre || product.title}</h3>
+        <div className="product-header">
+          <h3>{product.titre || product.title}</h3>
+          <p className="product-type">
+            {product.type_vente === 'enchere' ? 'Enchère' : 
+             product.type_vente === 'nego' ? 'Négociation' : 
+             'Achat immédiat'}
+          </p>
+        </div>
         <p className="price">{Number(product.prix || product.price).toFixed(2)} €</p>
         <div className="badge">{getBadgeType(product.type_vente || product.type)}</div>
       </div>
