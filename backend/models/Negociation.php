@@ -106,7 +106,7 @@ class Negociation {
             $numCmd = $this->conn->lastInsertId();
 
             // 4. Insert into CONTIENT
-            $q4 = "INSERT INTO CONTIENT (NumCmd, NumProd, Quantite, PrixUnitaire) VALUES (:cmd, :prod, 1, :montant)";
+            $q4 = "INSERT INTO CONTIENT (NumCmd, NumProd, Quantite, PrixUnit) VALUES (:cmd, :prod, 1, :montant)";
             $s4 = $this->conn->prepare($q4);
             $s4->bindParam(":cmd", $numCmd);
             $s4->bindParam(":prod", $numProd);
