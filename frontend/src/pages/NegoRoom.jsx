@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductsFromDatabase, initNego, getHistoriqueNego, postNegoMessage } from '../services/api';
+import { getProductsFromDatabase, initNego, getHistoriqueNego, postNegoMessage, accepterOffreNego } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './NegoRoom.css';
 
@@ -82,6 +82,22 @@ const NegoRoom = () => {
     }
   };
 
+  const handleAccept = async (montant) => {
+    if (window.confirm(`Accepter cette offre de ${Number(montant).toFixed(2)} € ? Cela conclura la vente.`)) {
+      try {
+        const res = await accepterOffreNego({ NumNego: negoId, MontantAccepte: montant, NumU_Accepteur: user.id });
+        if (res.status === 'success') {
+          alert('Offre acceptée ! La vente est conclue.');
+          window.location.reload();
+        } else {
+          alert("Erreur lors de l'acceptation.");
+        }
+      } catch (err) {
+        alert("Erreur réseau.");
+      }
+    }
+  };
+
   if (loading) return <div className="loading">Connexion à la salle...</div>;
   if (!product) return <div className="empty">Produit introuvable.</div>;
 
@@ -102,7 +118,18 @@ const NegoRoom = () => {
               <div key={idx} className={`chat-message ${isMe ? 'message-me' : 'message-other'}`}>
                 <div className="msg-content">{msg.Contenu}</div>
                 {msg.MontantProp && (
-                  <div className="msg-offer">Offre : {Number(msg.MontantProp).toFixed(2)} €</div>
+                  <div className="msg-offer">
+                    Offre : {Number(msg.MontantProp).toFixed(2)} €
+                    {!isMe && (
+                      <button 
+                        onClick={() => handleAccept(msg.MontantProp)} 
+                        className="btn-success" 
+                        style={{ marginLeft: '10px', padding: '5px 10px', fontSize: '0.8rem', borderRadius: '4px' }}
+                      >
+                        Accepter
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             );

@@ -45,6 +45,23 @@ class NegociationController {
         }
     }
 
+    // Accepter une offre
+    public function accepter() {
+        $data = json_decode(file_get_contents("php://input"));
+        if(!empty($data->NumNego) && !empty($data->MontantAccepte) && !empty($data->NumU_Accepteur)) {
+            if($this->nego->accepterOffre($data->NumNego, $data->MontantAccepte, $data->NumU_Accepteur)) {
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Offre acceptée."]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["status" => "error", "message" => "Erreur lors de l'acceptation."]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Données incomplètes."]);
+        }
+    }
+
     // Lire les messages (GET)
     public function getHistorique($numNego) {
         // Get NumProd for this nego

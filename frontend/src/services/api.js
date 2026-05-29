@@ -79,6 +79,20 @@ export const initNego = async (data) => {
   }
 };
 
+export const accepterOffreNego = async (payload) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/nego/accepter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur API:", error);
+    throw error;
+  }
+};
+
 export const getHistoriqueNego = async (negoId) => {
   try {
     const response = await fetch(`${API_BASE_URL}/nego/historique?id=${negoId}`);
