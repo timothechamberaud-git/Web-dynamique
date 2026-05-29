@@ -1,0 +1,119 @@
+.admin-dashboard {
+  background-color: #fcfcfc;
+  min-height: 100vh;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 50px;
+  background-color: white;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.admin-brand {
+  font-family: 'Monument Extended', sans-serif;
+  color: #111424;
+  font-size: 1.5rem;
+}
+
+.admin-icons {
+  display: flex;
+  gap: 20px;
+  color: #111424;
+}
+
+.admin-content {
+  padding: 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-content .subtitle {
+  color: #8fa0a8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  display: block;
+}
+
+.admin-info-box {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.big-number {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.big-number h1 {
+  font-family: 'Monument Extended', sans-serif;
+  font-size: 6rem;
+  color: var(--secondary);
+  line-height: 1;
+}
+
+.big-number span {
+  font-size: 0.8rem;
+  color: #111424;
+  font-weight: 600;
+}
+
+.admin-desc {
+  max-width: 800px;
+}
+
+.admin-desc p {
+  color: #8fa0a8;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.admin-desc h4 {
+  color: #111424;
+  font-weight: 700;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111424;
+  border-bottom: 2px solid #111424;
+}
+
+.admin-table td {
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #111424;
+}
+
+.row-light {
+  background-color: #f1f3f5;
+}
+
+.row-dark {
+  background-color: #e3e7eb;
+}
+
+.action-cell {
+  font-weight: 700;
+}
+
+.text-red { color: #d93838; }
+.text-green { color: var(--secondary); }
+.text-gray { color: #8fa0a8; }

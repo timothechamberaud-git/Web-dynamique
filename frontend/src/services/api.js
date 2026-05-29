@@ -103,3 +103,48 @@ export const postNegoMessage = async (msgData) => {
     throw error;
   }
 };
+
+export const getUserStats = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/dashboard?id=${userId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching stats:", error);
+    return null;
+  }
+};
+
+export const getNotifications = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/notifications?id=${userId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching notifs:", error);
+    return null;
+  }
+};
+
+export const markNotificationsAsRead = async (userId) => {
+  try {
+    await fetch(`${API_BASE_URL}/user/notifications/read`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: userId })
+    });
+  } catch (error) {
+    console.error("Erreur marking notifs:", error);
+  }
+};
+
+export const getSignalements = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/signalements`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching signalements:", error);
+    return null;
+  }
+};

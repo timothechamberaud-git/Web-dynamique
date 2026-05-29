@@ -80,6 +80,32 @@ elseif ($endpoint === 'valider' && strpos($_SERVER['REQUEST_URI'], '/commande/va
     $controller = new CommandeController($db);
     $controller->validerPanier();
 }
+// GET /user/dashboard?id=X -> Stats Utilisateur
+elseif ($endpoint === 'dashboard' && strpos($_SERVER['REQUEST_URI'], '/user/dashboard') !== false && $method === 'GET') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $controller->getStats($_GET['id'] ?? 0);
+}
+// GET /user/notifications?id=X -> Notifications Utilisateur
+elseif ($endpoint === 'notifications' && strpos($_SERVER['REQUEST_URI'], '/user/notifications') !== false && $method === 'GET') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $controller->getNotifications($_GET['id'] ?? 0);
+}
+// POST /user/notifications/read -> Marquer comme lu
+elseif ($endpoint === 'read' && strpos($_SERVER['REQUEST_URI'], '/user/notifications/read') !== false && $method === 'POST') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $data = json_decode(file_get_contents("php://input"));
+    $controller->markNotificationsAsRead($data->id ?? 0);
+}
+// GET /admin/signalements -> Panneau Admin
+elseif ($endpoint === 'signalements' && strpos($_SERVER['REQUEST_URI'], '/admin/signalements') !== false && $method === 'GET') {
+    require_once '../controllers/AdminController.php';
+    $controller = new AdminController($db);
+    $controller->getSignalements();
+}
+
 // Erreur 404 -> Route non trouvée
 else {
     http_response_code(404);
