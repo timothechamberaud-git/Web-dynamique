@@ -133,7 +133,7 @@ export const postNegoMessage = async (msgData) => {
 
 export const getUserStats = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/dashboard?id=${userId}`);
+    const response = await fetch(`${API_BASE_URL}/user/dashboard?id=${userId}&t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -144,7 +144,7 @@ export const getUserStats = async (userId) => {
 
 export const getNotifications = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/notifications?id=${userId}`);
+    const response = await fetch(`${API_BASE_URL}/user/notifications?id=${userId}&t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -167,7 +167,7 @@ export const markNotificationsAsRead = async (userId) => {
 
 export const getSignalements = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/admin/signalements`);
+    const response = await fetch(`${API_BASE_URL}/admin/signalements?t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -178,7 +178,7 @@ export const getSignalements = async () => {
 
 export const getSuiviEncheres = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/suivi-encheres?id=${userId}`);
+    const response = await fetch(`${API_BASE_URL}/user/suivi-encheres?id=${userId}&t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -189,7 +189,7 @@ export const getSuiviEncheres = async (userId) => {
 
 export const getSuiviNegos = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/suivi-negos?id=${userId}`);
+    const response = await fetch(`${API_BASE_URL}/user/suivi-negos?id=${userId}&t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -200,7 +200,7 @@ export const getSuiviNegos = async (userId) => {
 
 export const getMesVentes = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/mes-ventes?id=${userId}`);
+    const response = await fetch(`${API_BASE_URL}/user/mes-ventes?id=${userId}&t=${Date.now()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
