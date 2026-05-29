@@ -86,8 +86,9 @@ class Enchere {
             }
 
             // 3. Insert COMMANDE
-            $stmtCmd = $this->conn->prepare("INSERT INTO COMMANDE (NumU_Acheteur) VALUES (:numU)");
+            $stmtCmd = $this->conn->prepare("INSERT INTO COMMANDE (NumU_Acheteur, MontantTotal) VALUES (:numU, :montant)");
             $stmtCmd->bindParam(":numU", $numU);
+            $stmtCmd->bindParam(":montant", $montant);
             $stmtCmd->execute();
             $numCmd = $this->conn->lastInsertId();
 
