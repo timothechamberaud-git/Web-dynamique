@@ -6,6 +6,7 @@ import './Auth.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const result = await login(email, password);
+    const result = await login(email, password, rememberMe);
     if (result.success) {
       navigate('/catalogue');
     } else {
@@ -34,6 +35,15 @@ const Login = () => {
           <div className="form-group">
             <label>Mot de passe</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+          </div>
+          <div className="form-group checkbox-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+            <input 
+              type="checkbox" 
+              id="remember" 
+              checked={rememberMe} 
+              onChange={e => setRememberMe(e.target.checked)} 
+            />
+            <label htmlFor="remember" style={{ margin: 0, fontWeight: 'normal', cursor: 'pointer' }}>Maintenir la connexion</label>
           </div>
           <button type="submit" className="btn-primary btn-full">Se Connecter</button>
         </form>

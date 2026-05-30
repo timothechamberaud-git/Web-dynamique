@@ -5,16 +5,20 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const storedUser = sessionStorage.getItem('user');
+    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     try {
       const response = await apiLogin({ Email: email, MotDePasse: password });
       if (response && response.status === 'success') {
         setUser(response.user);
-        sessionStorage.setItem('user', JSON.stringify(response.user));
+        if (rememberMe) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        } else {
+          sessionStorage.setItem('user', JSON.stringify(response.user));
+        }
         return { success: true };
       }
       return { success: false, message: response?.message || 'Erreur de connexion' };
@@ -38,6 +42,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
   };
 
   return (
