@@ -44,8 +44,9 @@ const Cart = () => {
 
   const total = getCartTotal();
 
-  const getImage = (id) => {
-    return `/images/product_${id}.png`;
+  const getImage = (prod) => {
+    if (prod.PhotoUrl) return prod.PhotoUrl;
+    return `/images/product_${prod.id || prod.NumProd}.png`;
   };
 
   return (
@@ -58,8 +59,8 @@ const Cart = () => {
             <p style={{ color: 'var(--text-light)' }}>Votre panier est vide.</p>
           ) : (
             cart.map((item, index) => (
-              <div key={item.id || index} className={`cart-item ${index % 2 !== 0 ? 'lighter' : ''}`}>
-                <div className="item-image" style={{ backgroundImage: `url(${getImage(item.id || item.NumProd)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+              <div className="cart-item" key={item.id || item.NumProd}>
+                <div className="item-image" style={{ backgroundImage: `url(${getImage(item)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div className="item-details">
                   <h3>{item.titre}</h3>
                   <p>{item.etat || 'Neuf'} | {item.type_vente === 'achat' ? 'Achat Direct' : 'Achat'}</p>

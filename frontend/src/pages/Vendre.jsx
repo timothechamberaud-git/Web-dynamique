@@ -13,7 +13,8 @@ const Vendre = () => {
     Etat: 'Neuf',
     TypeTransaction: 'achat',
     PrixBase: '',
-    NumCat: 1
+    NumCat: 1,
+    PhotoUrl: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -118,8 +119,19 @@ const Vendre = () => {
             </div>
           </div>
 
+          <div className="form-group">
+            <label>Lien de l'image (URL) - Optionnel</label>
+            <input 
+              type="url" 
+              name="PhotoUrl" 
+              placeholder="Ex: https://exemple.com/image.jpg" 
+              value={formData.PhotoUrl} 
+              onChange={handleChange} 
+            />
+          </div>
+
           <div className="form-info">
-            <p><strong>Note concernant les images :</strong> Pour simplifier l'utilisation, une image par défaut sera automatiquement attribuée à votre produit lors de sa création. L'upload de photo n'est pas requis pour cette démonstration.</p>
+            <p><strong>Note concernant les images :</strong> Collez directement le lien (URL) d'une image trouvée sur internet. Si vous laissez ce champ vide, une image par défaut sera automatiquement attribuée.</p>
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', marginTop: '20px' }}>

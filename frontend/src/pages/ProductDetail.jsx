@@ -83,7 +83,9 @@ const ProductDetail = () => {
   if (loading) return <div className="loading">Chargement...</div>;
   if (!product) return <div className="empty">Produit introuvable.</div>;
 
-  const getImage = (pid) => {
+  const getImage = (prod) => {
+    if (prod && prod.PhotoUrl) return prod.PhotoUrl;
+    const pid = prod?.id || prod?.NumProd;
     return `/images/product_${pid}.png`;
   };
 
@@ -203,10 +205,9 @@ const ProductDetail = () => {
   return (
     <div className="product-detail-page">
       <div className="page-header">DÉTAIL PRODUIT : {isEnchere ? 'ENCHÈRE' : isNego ? 'NÉGOCIATION' : 'ACHAT DIRECT'}</div>
-      
-      <div className="detail-grid">
-        <div className="detail-image-box">
-          <img src={getImage(product.id || product.NumProd)} alt={product.titre} />
+      <div className="detail-container">
+        <div className="detail-image-section">
+          <img src={getImage(product)} alt={product.titre} />
         </div>
         
         <div className="detail-info">

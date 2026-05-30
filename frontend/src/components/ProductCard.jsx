@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
-  // Use a fallback image depending on the title if image is missing from DB
-  const getImage = (id) => {
-    return `/images/product_${id}.png`;
+  const getImage = (product) => {
+    if (product.PhotoUrl) return product.PhotoUrl;
+    return `/images/product_${product.id || product.NumProd}.png`;
   };
 
   const getBadgeType = (type) => {
@@ -20,7 +20,7 @@ const ProductCard = ({ product }) => {
   return (
     <Link to={`/produit/${product.id}`} className="product-card">
       <div className="product-image-container">
-        <img src={getImage(product.id || product.NumProd)} alt={product.titre || product.title} />
+        <img src={getImage(product)} alt={product.titre || product.title} />
       </div>
       <div className="product-info">
         <div className="product-header">

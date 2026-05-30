@@ -30,7 +30,8 @@ class ProduitController {
                     "categorie" => $NomCat,
                     "vendeur" => $NomVendeur,
                     "NumU_Vendeur" => $NumU_Vendeur,
-                    "StatutVente" => $StatutVente
+                    "StatutVente" => $StatutVente,
+                    "PhotoUrl" => isset($PhotoUrl) ? $PhotoUrl : null
                 );
                 array_push($produits_arr, $produit_item);
             }
@@ -46,22 +47,23 @@ class ProduitController {
     public function ajouter() {
         $data = json_decode(file_get_contents("php://input"));
         if (!empty($data->Titre) && !empty($data->PrixBase) && !empty($data->NumU_Vendeur) && !empty($data->TypeTransaction)) {
-            $query = "INSERT INTO PRODUIT (Titre, Etat, TypeTransaction, PrixBase, NumCat, NumU_Vendeur) 
-                      VALUES (:titre, :etat, :type_transaction, :prix, :numCat, :numU_Vendeur)";
+            $query = "INSERT INTO PRODUIT (Titre, Etat, TypeTransaction, PrixBase, NumCat, NumU_Vendeur, PhotoUrl) 
+                      VALUES (:titre, :etat, :type_transaction, :prix, :numCat, :numU_Vendeur, :photoUrl)";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(":titre", $data->Titre);
             $stmt->bindParam(":etat", $data->Etat);
             $stmt->bindParam(":type_transaction", $data->TypeTransaction);
             $stmt->bindParam(":prix", $data->PrixBase);
-            // Default to category 1 if not provided
             $cat = !empty($data->NumCat) ? $data->NumCat : 1;
             $stmt->bindParam(":numCat", $cat);
             $stmt->bindParam(":numU_Vendeur", $data->NumU_Vendeur);
+            $photo = !empty($data->PhotoUrl) ? $data->PhotoUrl : null;
+            $stmt->bindParam(":photoUrl", $photo);
             
             if ($stmt->execute()) {
                 $numProd = $this->db->lastInsertId();
                 if ($data->TypeTransaction === 'enchere') {
-                    $dateFin = date('Y-m-d H:i:s', strtotime('+7 days'));
+                    $dateFin = date('Y-m-d H:i:s', strtotime('+5 minutes'));
                     $queryEnc = "INSERT INTO ENCHERE (DateFin, PrixActuel, NumProd) VALUES (:dateFin, :prix, :numProd)";
                     $stmtEnc = $this->db->prepare($queryEnc);
                     $stmtEnc->bindParam(":dateFin", $dateFin);
