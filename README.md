@@ -1,1 +1,71 @@
-# Web-dynamique
+# Mercato Nova - Plateforme de Vente d'Équipements Sportifs
+
+Bienvenue sur le dépôt de **Mercato Nova**, une plateforme hybride e-commerce et de transactions entre particuliers pour des équipements sportifs de pointe.
+
+Ce projet met en relation des vendeurs et des acheteurs autour de trois grands types de transactions :
+1. **L'Achat Direct** : Comme sur un site e-commerce classique, avec mise au panier et paiement immédiat.
+2. **Les Enchères Live** : Un système d'enchères en temps réel, avec décompte, où les acheteurs surenchérissent pour remporter le produit à la fin du chrono.
+3. **La Négociation** : Une salle de marché privée entre un acheteur et un vendeur permettant de discuter d'un prix en direct via un tchat jusqu'à trouver un accord.
+
+---
+
+## 🛠️ Stack Technique
+
+### Frontend
+- **React.js** (v18+) avec `react-router-dom` pour la gestion des pages.
+- **Vanilla CSS** pour l'interface graphique (thème sombre élégant avec accents verts).
+- Aucune utilisation de librairie de composants externes (Bootstrap/Tailwind) pour une maîtrise complète du design sur mesure.
+
+### Backend & API
+- **PHP 8+** (Vanilla, architecture MVC simplifiée).
+- **PDO** pour la communication sécurisée avec la base de données.
+- Routeur frontal basique dans `public/index.php`.
+
+### Base de données
+- **MySQL 8** structuré autour de tables relationnelles : `UTILISATEUR`, `PRODUIT`, `CATEGORIE`, `ENCHERE`, `OFFRE`, `NEGOCIATION`, `MESSAGE_NEGO`, `COMMANDE`, `CONTIENT`, `NOTIFICATION`.
+
+---
+
+## 🚀 Fonctionnalités Clés
+
+- **Système d'authentification** : Connexion, inscription, avec isolation parfaite des sessions par onglet (utilisation du `sessionStorage`).
+- **Boutique & Catalogue dynamique** : Filtrage en temps réel des articles par sport et par type de vente.
+- **Système de Panier et de Validation de Commande** : Conversion des produits mis au panier en commandes officielles validées en base de données.
+- **Salle d'Enchères Dynamique** : 
+  - Synchronisation du prix actuel (`polling`) sans problème de cache navigateur.
+  - Le système détecte le gagnant automatiquement à la fin de l'enchère et fait apparaître un bouton de paiement officiel.
+  - Modification immédiate du statut de l'objet dans le catalogue (les objets terminés ou payés disparaissent de la boutique pour ne pas créer de commandes fantômes).
+- **Salles de Négociation Privées** :
+  - Création de tchats 1-to-1 en base de données.
+  - Proposition de montants par l'acheteur, acceptation par le vendeur.
+  - Notification automatique et transformation de l'accord en commande payée.
+- **Tableau de Bord & Notifications** : Historique des ventes, suivi des enchères et négociations en temps réel. Cloche de notification (pastille rouge) avertissant de chaque événement (message, surenchère, paiement).
+
+---
+
+## ⚙️ Installation Globale
+
+1. **Prérequis**
+   - WAMP, XAMPP ou tout autre serveur local (PHP 8+, MySQL).
+   - Node.js (pour le Frontend React).
+
+2. **Backend (Base de données et Serveur PHP)**
+   - Importez le fichier SQL de la base de données dans votre serveur MySQL local.
+   - Configurez les identifiants de base de données dans `backend/config/Database.php`.
+   - Lancez votre serveur web (ex: Apache sur WampServer) pointant vers le dossier `/backend/public`.
+
+3. **Frontend (React)**
+   - Ouvrez un terminal dans le dossier `/frontend`.
+   - Lancez `npm install` pour installer les dépendances.
+   - Modifiez si besoin l'URL de base de l'API dans `frontend/src/services/api.js` (par défaut `http://localhost/Web-dynamique/backend/public`).
+   - Lancez `npm start` pour démarrer l'environnement de développement.
+
+---
+
+## 🧹 Notes de version récentes
+L'application a été entièrement revue et stabilisée sur plusieurs points critiques lors de la dernière mise à jour :
+- **Refonte des sessions** : Le passage de `localStorage` à `sessionStorage` permet le multi-compte simultané dans différents onglets du même navigateur. Parfait pour tester les échanges Acheteur/Vendeur !
+- **Fin du Cache Persistant** : L'intégration d'un horodatage (`timestamp`) sur les requêtes GET sensibles garantit la mise à jour des prix en temps réel sur l'écran.
+- **Correction des Commandes** : Les paiements finaux d'Enchères ou de Négociations renseignent désormais rigoureusement toutes les tables requises (`COMMANDE` et `CONTIENT` avec `MontantTotal`, `PrixUnit` et `Quantite`).
+
+*Développé avec passion pour le monde du sport.*

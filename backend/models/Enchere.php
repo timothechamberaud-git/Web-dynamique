@@ -128,7 +128,6 @@ class Enchere {
             return true;
         } catch (Exception $e) {
             $this->conn->rollBack();
-            file_put_contents(__DIR__ . '/../public/error_log.txt', date('[Y-m-d H:i:s] ') . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
