@@ -45,22 +45,47 @@ Ce projet met en relation des vendeurs et des acheteurs autour de trois grands t
 
 ---
 
-## ⚙️ Installation Globale
+## ⚙️ Guide d'Installation et de Lancement (Pour l'évaluation)
 
-1. **Prérequis**
-   - WAMP, XAMPP ou tout autre serveur local (PHP 8+, MySQL).
-   - Node.js (pour le Frontend React).
+Pour tester ce projet dans des conditions optimales, merci de suivre rigoureusement les étapes ci-dessous. Le projet nécessite un serveur local (Apache/MySQL) et Node.js.
 
-2. **Backend (Base de données et Serveur PHP)**
-   - Importez le fichier SQL de la base de données dans votre serveur MySQL local.
-   - Configurez les identifiants de base de données dans `backend/config/Database.php`.
-   - Lancez votre serveur web (ex: Apache sur WampServer) pointant vers le dossier `/backend/public`.
+### 1. Prérequis
+- **WAMP, XAMPP ou MAMP** (comprenant PHP 8+ et MySQL).
+- **Node.js** (version 16+ recommandée) et **npm**.
+- **Git** (optionnel, si vous clonez le dépôt).
 
-3. **Frontend (React)**
-   - Ouvrez un terminal dans le dossier `/frontend`.
-   - Lancez `npm install` pour installer les dépendances.
-   - Modifiez si besoin l'URL de base de l'API dans `frontend/src/services/api.js` (par défaut `http://localhost/Web-dynamique/backend/public`).
-   - Lancez `npm start` pour démarrer l'environnement de développement.
+### 2. Mise en place de la Base de Données
+1. Lancez votre serveur MySQL (via WAMP/XAMPP).
+2. Ouvrez **phpMyAdmin** (généralement accessible via `http://localhost/phpmyadmin`).
+3. Créez une nouvelle base de données nommée exactement **`mercato_nova`**.
+4. Importez le fichier SQL de dump (qui contient la structure des tables et les données de test) dans cette base.
+5. *Note technique :* Les identifiants de connexion à la base sont configurés par défaut pour WAMP (`root` sans mot de passe). Si vous utilisez MAMP (mot de passe `root`), veuillez modifier le fichier `backend/config/Database.php`.
+
+### 3. Lancement du Backend (API PHP)
+1. Placez l'intégralité du dossier du projet dans le répertoire racine de votre serveur web :
+   - Pour WAMP : `C:\wamp64\www\Web-dynamique`
+   - Pour XAMPP : `C:\xampp\htdocs\Web-dynamique`
+2. Démarrez le serveur Apache.
+3. Le backend est désormais prêt à écouter les requêtes sur l'URL `http://localhost/Web-dynamique/backend/public`.
+
+### 4. Lancement du Frontend (Application React)
+1. Ouvrez un terminal (Invite de commandes ou PowerShell).
+2. Naviguez dans le dossier `frontend` du projet :
+   ```bash
+   cd chemin/vers/Web-dynamique/frontend
+   ```
+3. Installez les dépendances du projet (le fameux dossier `node_modules` qui n'est pas versionné) :
+   ```bash
+   npm install
+   ```
+4. Démarrez le serveur de développement React :
+   ```bash
+   npm run dev
+   ```
+   *(Ou `npm start` selon votre configuration Vite/CRA).*
+5. Le terminal vous affichera une URL locale (généralement `http://localhost:5173` ou `http://localhost:3000`). Cliquez dessus ou copiez-la dans votre navigateur web.
+
+🎉 **Félicitations, l'application Mercato Nova est lancée et fonctionnelle !** Vous pouvez utiliser plusieurs onglets pour vous connecter avec des comptes différents et tester le temps réel.
 
 ---
 
