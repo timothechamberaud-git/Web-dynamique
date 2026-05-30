@@ -5,7 +5,9 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+    // sessionStorage prend toujours la priorité sur l'onglet actuel. 
+    // S'il est vide, on cherche dans localStorage (connexion persistante).
+    const storedUser = sessionStorage.getItem('user') || localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
@@ -14,10 +16,13 @@ export const AuthProvider = ({ children }) => {
       const response = await apiLogin({ Email: email, MotDePasse: password });
       if (response && response.status === 'success') {
         setUser(response.user);
+        
+        // On sauvegarde TOUJOURS dans la session de l'onglet courant
+        sessionStorage.setItem('user', JSON.stringify(response.user));
+        
         if (rememberMe) {
+          // Si demandé, on sauvegarde AUSSI globalement pour les futures visites
           localStorage.setItem('user', JSON.stringify(response.user));
-        } else {
-          sessionStorage.setItem('user', JSON.stringify(response.user));
         }
         return { success: true };
       }
