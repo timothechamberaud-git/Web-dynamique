@@ -1,4 +1,3 @@
-// Données simulées pour le développement Frontend autonome
 const mockProducts = [
   {
     id: "1",
@@ -30,7 +29,6 @@ const mockProducts = [
   }
 ];
 
-// Simule la récupération de tout le catalogue (avec un délai réseau de 500ms)
 export const fetchProducts = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -39,7 +37,6 @@ export const fetchProducts = () => {
   });
 };
 
-// Simule la récupération d'un seul produit par son ID
 export const fetchProductById = (id) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
