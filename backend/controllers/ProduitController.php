@@ -63,10 +63,8 @@ class ProduitController {
             if ($stmt->execute()) {
                 $numProd = $this->db->lastInsertId();
                 if ($data->TypeTransaction === 'enchere') {
-                    $dateFin = date('Y-m-d H:i:s', strtotime('+5 minutes'));
-                    $queryEnc = "INSERT INTO ENCHERE (DateFin, PrixActuel, NumProd) VALUES (:dateFin, :prix, :numProd)";
+                    $queryEnc = "INSERT INTO ENCHERE (DateFin, PrixActuel, NumProd) VALUES (DATE_ADD(NOW(), INTERVAL 5 MINUTE), :prix, :numProd)";
                     $stmtEnc = $this->db->prepare($queryEnc);
-                    $stmtEnc->bindParam(":dateFin", $dateFin);
                     $stmtEnc->bindParam(":prix", $data->PrixBase);
                     $stmtEnc->bindParam(":numProd", $numProd);
                     $stmtEnc->execute();
