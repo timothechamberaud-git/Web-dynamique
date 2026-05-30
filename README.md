@@ -1,6 +1,8 @@
-# Mercato Nova - Plateforme de Vente d'Équipements Sportifs
+# Mercato Nova - Projet Étudiant (2ème année d'École d'Ingénieur)
 
-Bienvenue sur le dépôt de **Mercato Nova**, une plateforme hybride e-commerce et de transactions entre particuliers pour des équipements sportifs de pointe.
+Bienvenue sur le dépôt de **Mercato Nova**, un projet développé dans le cadre de notre cursus de 2ème année d'école d'ingénieur post-bac.
+
+Il s'agit d'une plateforme hybride e-commerce et de transactions entre particuliers spécialisée dans les équipements sportifs. Ce projet a pour but de mettre en pratique nos connaissances en développement web Full-Stack, en conception de bases de données relationnelles et en gestion d'états asynchrones complexes.
 
 Ce projet met en relation des vendeurs et des acheteurs autour de trois grands types de transactions :
 1. **L'Achat Direct** : Comme sur un site e-commerce classique, avec mise au panier et paiement immédiat.
