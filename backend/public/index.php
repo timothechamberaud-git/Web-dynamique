@@ -154,6 +154,26 @@ elseif ($endpoint === 'signalements' && strpos($_SERVER['REQUEST_URI'], '/admin/
     $controller = new AdminController($db);
     $controller->getSignalements();
 }
+elseif ($endpoint === 'users' && strpos($_SERVER['REQUEST_URI'], '/admin/users') !== false && $method === 'GET') {
+    require_once '../controllers/AdminController.php';
+    $controller = new AdminController($db);
+    $controller->getAllUsers();
+}
+elseif ($endpoint === 'products' && strpos($_SERVER['REQUEST_URI'], '/admin/products') !== false && $method === 'GET') {
+    require_once '../controllers/AdminController.php';
+    $controller = new AdminController($db);
+    $controller->getAllProducts();
+}
+elseif ($endpoint === 'delete-user' && strpos($_SERVER['REQUEST_URI'], '/admin/delete-user') !== false && $method === 'POST') {
+    require_once '../controllers/AdminController.php';
+    $controller = new AdminController($db);
+    $controller->deleteUser();
+}
+elseif ($endpoint === 'delete-product' && strpos($_SERVER['REQUEST_URI'], '/admin/delete-product') !== false && $method === 'POST') {
+    require_once '../controllers/AdminController.php';
+    $controller = new AdminController($db);
+    $controller->deleteProduct();
+}
 
 // POST /enchere/payer -> Payer une enchère terminée
 elseif ($endpoint === 'payer' && strpos($_SERVER['REQUEST_URI'], '/enchere/payer') !== false && $method === 'POST') {

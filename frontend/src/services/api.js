@@ -190,6 +190,56 @@ export const getSignalements = async () => {
   }
 };
 
+export const getAllUsersAdmin = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/users?t=${Date.now()}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching users admin:", error);
+    return null;
+  }
+};
+
+export const getAllProductsAdmin = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/products?t=${Date.now()}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur fetching products admin:", error);
+    return null;
+  }
+};
+
+export const deleteUserAdmin = async (numU) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/delete-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ NumU: numU })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur delete user admin:", error);
+    throw error;
+  }
+};
+
+export const deleteProductAdmin = async (numProd) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/delete-product`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ NumProd: numProd })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur delete product admin:", error);
+    throw error;
+  }
+};
+
 export const getSuiviEncheres = async (userId) => {
   try {
     const response = await fetch(`${API_BASE_URL}/user/suivi-encheres?id=${userId}&t=${Date.now()}`);
