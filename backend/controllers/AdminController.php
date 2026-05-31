@@ -35,9 +35,16 @@ class AdminController {
     }
 
     public function getAllProducts() {
-        $query = "SELECT p.NumProd, p.Titre, p.TypeTransaction, p.PrixBase, u.Prenom as Vendeur
+        $query = "SELECT p.NumProd, p.Titre, p.TypeTransaction, p.PrixBase, u.Prenom as Vendeur,
+                  CASE
+                    WHEN EXISTS (SELECT 1 FROM CONTIENT WHERE NumProd = p.NumProd) THEN 'vendu'
+                    WHEN EXISTS (SELECT 1 FROM NEGOCIATION WHERE NumProd = p.NumProd AND Statut IN ('acceptee', 'payee')) THEN 'vendu'
+                    WHEN p.TypeTransaction = 'enchere' AND EXISTS (SELECT 1 FROM ENCHERE WHERE NumProd = p.NumProd AND DateFin < NOW()) THEN 'enchere_terminee'
+                    ELSE 'disponible'
+                  END as StatutVente
                   FROM PRODUIT p
                   JOIN UTILISATEUR u ON p.NumU_Vendeur = u.NumU
+                  HAVING StatutVente = 'disponible'
                   ORDER BY p.NumProd DESC";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
