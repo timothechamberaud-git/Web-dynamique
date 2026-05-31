@@ -23,7 +23,7 @@ class AdminController {
         echo json_encode(["status" => "success", "data" => $signalements]);
     }
     public function getAllUsers() {
-        $query = "SELECT NumU, Nom, Prenom, Email, Role, DateInscription FROM UTILISATEUR ORDER BY DateInscription DESC";
+        $query = "SELECT NumU, Nom, Prenom, Email, Role FROM UTILISATEUR ORDER BY NumU DESC";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         $users = [];
@@ -35,7 +35,7 @@ class AdminController {
     }
 
     public function getAllProducts() {
-        $query = "SELECT p.NumProd, p.Titre, p.TypeTransaction, p.PrixBase, p.StatutVente, u.Prenom as Vendeur
+        $query = "SELECT p.NumProd, p.Titre, p.TypeTransaction, p.PrixBase, u.Prenom as Vendeur
                   FROM PRODUIT p
                   JOIN UTILISATEUR u ON p.NumU_Vendeur = u.NumU
                   ORDER BY p.NumProd DESC";

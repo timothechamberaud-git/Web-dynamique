@@ -106,7 +106,7 @@ const AdminDashboard = () => {
         {activeTab === 'acheteurs' && (
           <table className="admin-table">
             <thead>
-              <tr><th>ID</th><th>Nom</th><th>Email</th><th>Inscription</th><th>Action</th></tr>
+              <tr><th>ID</th><th>Nom</th><th>Email</th><th>Rôle</th><th>Action</th></tr>
             </thead>
             <tbody>
               {buyers.map((u, idx) => (
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
                   <td>{u.NumU}</td>
                   <td>{u.Prenom} {u.Nom}</td>
                   <td>{u.Email}</td>
-                  <td>{new Date(u.DateInscription).toLocaleDateString()}</td>
+                  <td>{u.Role}</td>
                   <td><button onClick={() => handleDeleteUser(u.NumU)} style={{color:'red', cursor:'pointer', border:'none', background:'none'}}>Bannir</button></td>
                 </tr>
               ))}
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
         {activeTab === 'vendeurs' && (
           <table className="admin-table">
             <thead>
-              <tr><th>ID</th><th>Nom (Vendeur)</th><th>Email</th><th>Inscription</th><th>Action</th></tr>
+              <tr><th>ID</th><th>Nom (Vendeur)</th><th>Email</th><th>Rôle</th><th>Action</th></tr>
             </thead>
             <tbody>
               {sellers.map((u, idx) => (
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
                   <td>{u.NumU}</td>
                   <td>{u.Prenom} {u.Nom}</td>
                   <td>{u.Email}</td>
-                  <td>{new Date(u.DateInscription).toLocaleDateString()}</td>
+                  <td>{u.Role}</td>
                   <td><button onClick={() => handleDeleteUser(u.NumU)} style={{color:'red', cursor:'pointer', border:'none', background:'none'}}>Bannir</button></td>
                 </tr>
               ))}
@@ -144,7 +144,7 @@ const AdminDashboard = () => {
         {activeTab === 'produits' && (
           <table className="admin-table">
             <thead>
-              <tr><th>ID Prod</th><th>Titre</th><th>Type</th><th>Vendeur</th><th>Statut</th><th>Action</th></tr>
+              <tr><th>ID Prod</th><th>Titre</th><th>Type</th><th>Vendeur</th><th>Prix</th><th>Action</th></tr>
             </thead>
             <tbody>
               {products.map((p, idx) => (
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
                   <td>{p.Titre}</td>
                   <td>{p.TypeTransaction}</td>
                   <td>{p.Vendeur}</td>
-                  <td>{p.StatutVente}</td>
+                  <td>{p.PrixBase} €</td>
                   <td><button onClick={() => handleDeleteProduct(p.NumProd)} style={{color:'red', cursor:'pointer', border:'none', background:'none'}}>Supprimer</button></td>
                 </tr>
               ))}
