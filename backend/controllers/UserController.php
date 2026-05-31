@@ -122,5 +122,37 @@ class UserController {
         http_response_code(200);
         echo json_encode(["status" => "success", "data" => $ventes]);
     }
+    public function updateProfile() {
+        $data = json_decode(file_get_contents("php://input"));
+        if (!empty($data->NumU) && !empty($data->Nom) && !empty($data->Prenom) && !empty($data->Email)) {
+            $query = "UPDATE UTILISATEUR SET Nom = :nom, Prenom = :prenom, Email = :email WHERE NumU = :numU";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":nom", $data->Nom);
+            $stmt->bindParam(":prenom", $data->Prenom);
+            $stmt->bindParam(":email", $data->Email);
+            $stmt->bindParam(":numU", $data->NumU);
+            
+            if ($stmt->execute()) {
+                http_response_code(200);
+                echo json_encode([
+                    "status" => "success", 
+                    "message" => "Profil mis à jour.",
+                    "user" => [
+                        "id" => $data->NumU,
+                        "NumU" => $data->NumU,
+                        "nom" => $data->Nom,
+                        "prenom" => $data->Prenom,
+                        "email" => $data->Email
+                    ]
+                ]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["status" => "error", "message" => "Impossible de mettre à jour le profil."]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Données incomplètes."]);
+        }
+    }
 }
 ?>

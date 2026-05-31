@@ -8,6 +8,7 @@ const Catalogue = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedSports, setSelectedSports] = useState([]);
   const [selectedTypes, setSelectedTypes] = useState([]);
 
@@ -29,6 +30,9 @@ const Catalogue = () => {
 
   useEffect(() => {
     let result = allProducts;
+    if (searchQuery.trim() !== '') {
+      result = result.filter(p => (p.titre || p.Titre || '').toLowerCase().includes(searchQuery.toLowerCase()));
+    }
     if (selectedSports.length > 0) {
       result = result.filter(p => selectedSports.includes(p.categorie));
     }
@@ -36,7 +40,7 @@ const Catalogue = () => {
       result = result.filter(p => selectedTypes.includes(p.type_vente));
     }
     setFilteredProducts(result);
-  }, [selectedSports, selectedTypes, allProducts]);
+  }, [searchQuery, selectedSports, selectedTypes, allProducts]);
 
   const handleSportToggle = (sport) => {
     setSelectedSports(prev => prev.includes(sport) ? prev.filter(s => s !== sport) : [...prev, sport]);
@@ -58,6 +62,16 @@ const Catalogue = () => {
   return (
     <div className="catalogue">
       <div className="page-header">CATALOGUE DE RECHERCHE</div>
+      
+      <div className="catalogue-search-bar" style={{ padding: '20px 40px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="Rechercher un produit (ex: vélo, maillot...)" 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ width: '100%', maxWidth: '600px', padding: '12px 20px', borderRadius: '30px', border: '1px solid var(--border)', fontSize: '1rem', outline: 'none' }}
+        />
+      </div>
       
       <div className="catalogue-layout">
         <aside className="sidebar">

@@ -237,6 +237,34 @@ export const postProduit = async (produitData) => {
   }
 };
 
+export const updateProfile = async (profileData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur update profile:", error);
+    throw error;
+  }
+};
+
+export const deleteProduit = async (payload) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/produits/supprimer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur delete produit:", error);
+    throw error;
+  }
+};
+
 export const validerCommande = async (commandeData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/panier/valider`, {

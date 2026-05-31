@@ -129,11 +129,23 @@ elseif ($endpoint === 'mes-ventes' && strpos($_SERVER['REQUEST_URI'], '/user/mes
     $controller = new UserController($db);
     $controller->getMesVentes($_GET['id'] ?? 0);
 }
+// POST /user/profile -> Modifier le profil
+elseif ($endpoint === 'profile' && strpos($_SERVER['REQUEST_URI'], '/user/profile') !== false && $method === 'POST') {
+    require_once '../controllers/UserController.php';
+    $controller = new UserController($db);
+    $controller->updateProfile();
+}
 // POST /produits/ajouter
 elseif ($endpoint === 'ajouter' && strpos($_SERVER['REQUEST_URI'], '/produits/ajouter') !== false && $method === 'POST') {
     require_once '../controllers/ProduitController.php';
     $controller = new ProduitController($db);
     $controller->ajouter();
+}
+// DELETE /produits/supprimer
+elseif ($endpoint === 'supprimer' && strpos($_SERVER['REQUEST_URI'], '/produits/supprimer') !== false && ($method === 'DELETE' || $method === 'POST')) {
+    require_once '../controllers/ProduitController.php';
+    $controller = new ProduitController($db);
+    $controller->supprimer();
 }
 
 // GET /admin/signalements -> Panneau Admin

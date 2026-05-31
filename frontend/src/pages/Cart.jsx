@@ -6,7 +6,7 @@ import { validerCommande } from '../services/api';
 import './Cart.css';
 
 const Cart = () => {
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart, getCartTotal, clearCart, removeFromCart } = useCart();
   const navigate = useNavigate();
   const { user } = useAuth(); // We need user info to place order
 
@@ -59,7 +59,14 @@ const Cart = () => {
             <p style={{ color: 'var(--text-light)' }}>Votre panier est vide.</p>
           ) : (
             cart.map((item, index) => (
-              <div className="cart-item" key={item.id || item.NumProd}>
+              <div className="cart-item" key={item.id || item.NumProd} style={{ position: 'relative' }}>
+                <button 
+                  onClick={() => removeFromCart(item.id || item.NumProd)}
+                  style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '1.2rem' }}
+                  title="Retirer du panier"
+                >
+                  ✖
+                </button>
                 <div className="item-image" style={{ backgroundImage: `url(${getImage(item)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div className="item-details">
                   <h3>{item.titre}</h3>

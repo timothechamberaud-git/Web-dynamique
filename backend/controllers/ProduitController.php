@@ -80,5 +80,31 @@ class ProduitController {
             echo json_encode(["status" => "error", "message" => "Données incomplètes."]);
         }
     }
+    public function supprimer() {
+        $data = json_decode(file_get_contents("php://input"));
+        if (!empty($data->NumProd) && !empty($data->NumU)) {
+            // Sécurité : vérifier que le produit appartient bien à cet utilisateur
+            $stmtCheck = $this->db->prepare("SELECT NumU_Vendeur FROM PRODUIT WHERE NumProd = :numProd");
+            $stmtCheck->bindParam(":numProd", $data->NumProd);
+            $stmtCheck->execute();
+            $prod = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if ($prod && $prod['NumU_Vendeur'] == $data->NumU) {
+                // On supprime d'abord les dépendances s'il n'y a pas de contraintes CASCADE
+                $this->db->prepare("DELETE FROM ENCHERE WHERE NumProd = :numProd")->execute([':numProd' => $data->NumProd]);
+                $this->db->prepare("DELETE FROM NEGOCIATION WHERE NumProd = :numProd")->execute([':numProd' => $data->NumProd]);
+                
+                $stmt = $this->db->prepare("DELETE FROM PRODUIT WHERE NumProd = :numProd");
+                $stmt->bindParam(":numProd", $data->NumProd);
+                if ($stmt->execute()) {
+                    http_response_code(200);
+                    echo json_encode(["status" => "success", "message" => "Produit supprimé."]);
+                    return;
+                }
+            }
+        }
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Impossible de supprimer le produit."]);
+    }
 }
 ?>
