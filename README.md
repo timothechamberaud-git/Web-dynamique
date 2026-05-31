@@ -1,4 +1,4 @@
-# Mercato Nova - Projet Étudiant (2ème année d'École d'Ingénieur)
+# Mercato Nova - Projet Étudiant 
 
 Bienvenue sur le dépôt de **Mercato Nova**, un projet développé dans le cadre de notre cursus de 2ème année d'école d'ingénieur post-bac.
 
@@ -45,7 +45,7 @@ Ce projet met en relation des vendeurs et des acheteurs autour de trois grands t
 
 ---
 
-## ⚙️ Guide d'Installation et de Lancement (Pour l'évaluation)
+## ⚙️ Guide d'Installation et de Lancement 
 
 Pour tester ce projet dans des conditions optimales, merci de suivre rigoureusement les étapes ci-dessous. Le projet nécessite un serveur local (Apache/MySQL) et Node.js.
 
@@ -95,4 +95,3 @@ L'application a été entièrement revue et stabilisée sur plusieurs points cri
 - **Fin du Cache Persistant** : L'intégration d'un horodatage (`timestamp`) sur les requêtes GET sensibles garantit la mise à jour des prix en temps réel sur l'écran.
 - **Correction des Commandes** : Les paiements finaux d'Enchères ou de Négociations renseignent désormais rigoureusement toutes les tables requises (`COMMANDE` et `CONTIENT` avec `MontantTotal`, `PrixUnit` et `Quantite`).
 
-*Développé avec passion pour le monde du sport.*
