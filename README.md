@@ -1,4 +1,4 @@
-# Mercato Nova - Projet Étudiant (2ème année d'École d'Ingénieur)
+# Mercato Nova - Projet Étudiant 
 
 Bienvenue sur le dépôt de **Mercato Nova**, un projet développé dans le cadre de notre cursus de 2ème année d'école d'ingénieur post-bac.
 
