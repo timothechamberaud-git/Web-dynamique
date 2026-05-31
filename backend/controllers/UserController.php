@@ -133,17 +133,17 @@ class UserController {
             $stmt->bindParam(":numU", $data->NumU);
             
             if ($stmt->execute()) {
+                // Récupérer l'utilisateur complet pour conserver le rôle
+                $stmtGet = $this->db->prepare("SELECT NumU as id, Nom as nom, Prenom as prenom, Email as email, Role as role FROM UTILISATEUR WHERE NumU = :numU");
+                $stmtGet->bindParam(":numU", $data->NumU);
+                $stmtGet->execute();
+                $fullUser = $stmtGet->fetch(PDO::FETCH_ASSOC);
+
                 http_response_code(200);
                 echo json_encode([
                     "status" => "success", 
                     "message" => "Profil mis à jour.",
-                    "user" => [
-                        "id" => $data->NumU,
-                        "NumU" => $data->NumU,
-                        "nom" => $data->Nom,
-                        "prenom" => $data->Prenom,
-                        "email" => $data->Email
-                    ]
+                    "user" => $fullUser
                 ]);
             } else {
                 http_response_code(503);

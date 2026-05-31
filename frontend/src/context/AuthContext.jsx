@@ -51,13 +51,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (newUserData) => {
-    setUser(newUserData);
-    if (localStorage.getItem('user')) {
-      localStorage.setItem('user', JSON.stringify(newUserData));
-    }
-    if (sessionStorage.getItem('user')) {
-      sessionStorage.setItem('user', JSON.stringify(newUserData));
-    }
+    setUser(prevUser => {
+      const updatedUser = { ...prevUser, ...newUserData };
+      if (localStorage.getItem('user')) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      if (sessionStorage.getItem('user')) {
+        sessionStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      return updatedUser;
+    });
   };
 
   return (
